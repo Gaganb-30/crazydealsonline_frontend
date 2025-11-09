@@ -205,8 +205,8 @@ const Policy = () => {
                   data practices, please contact us:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4 mt-2">
-                  <li>Email: apnigmail.com</li>
-                  <li>
+                  <li>Email: support@crazydealsonline.in</li>
+                  {/* <li>
                     Telegram:{" "}
                     <a
                       href="https://t.me/n0t_ur_type"
@@ -215,7 +215,7 @@ const Policy = () => {
                       Crazy_Deals_Online
                     </a>
                   </li>
-                  <li>Discord: CrazyDealsOnlines</li>
+                  <li>Discord: CrazyDealsOnlines</li> */}
                 </ul>
               </section>
             </div>

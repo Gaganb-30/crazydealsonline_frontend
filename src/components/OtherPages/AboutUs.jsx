@@ -205,7 +205,7 @@ const AboutUs = () => {
               Our Values
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              The principles that guide everything we do at Crazy Deals Online
+              The principles that guide everything we do at CrazyDealsOnline
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -319,14 +319,14 @@ const AboutUs = () => {
       <footer className="bg-gray-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold mb-4">
-            Crazy Deals Online Bookstore
+            CrazyDealsOnline Bookstore
           </h3>
           <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
             Your one-stop destination for amazing book deals and literary
             adventures. Where every page begins a new journey.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 text-sm text-gray-400">
-            <span>© {new Date().getFullYear()} Crazy Deals Online</span>
+            <span>© {new Date().getFullYear()} CrazyDealsOnline</span>
             <span className="hidden sm:inline">•</span>
             <Link
               to="/privacy-policy"
