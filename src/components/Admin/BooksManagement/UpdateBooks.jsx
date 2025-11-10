@@ -726,7 +726,7 @@ const UpdateBooks = () => {
                 />
               </div>
 
-              {/* Stock */}
+              {/* Weight */}
               <div>
                 <label
                   htmlFor="weight"

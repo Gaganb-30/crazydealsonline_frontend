@@ -19,6 +19,8 @@ import Footer from "./components/Header/Footer"; // Import the Footer component
 import OAuthSuccess from "./components/Admin/OAuth/OAuthSuccess";
 import Checkout from "./components/AllPages/OrderPages/Checkout";
 import OrderSuccess from "./components/AllPages/OrderPages/OrderSuccess";
+import OrderHistory from "./components/AllPages/OrderPages/OrderHistory";
+import OrderDetails from "./components/AllPages/OrderPages/OrderDetails";
 
 // Layout component that includes the Header and Footer
 const Layout = ({ children }) => {
@@ -161,6 +163,8 @@ function App() {
           {/* Checkout */}
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
         </Routes>
       </BrowserRouter>
     </div>
