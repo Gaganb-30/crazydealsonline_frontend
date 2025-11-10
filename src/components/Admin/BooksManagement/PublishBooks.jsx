@@ -18,6 +18,7 @@ const PublishBooks = () => {
     // Book details
     isbn: "",
     pages: "",
+    weight: "",
     country: "India",
     publicationDate: "",
   });
@@ -172,10 +173,11 @@ const PublishBooks = () => {
       !formData.publisher ||
       !formData.price ||
       !formData.category ||
-      !formData.author
+      !formData.author ||
+      !formData.weight
     ) {
       setError(
-        "Title, publisher, price, category, and author are required fields"
+        "Title, publisher, price, category, author and weight are required fields"
       );
       setLoading(false);
       return;
@@ -223,6 +225,7 @@ const PublishBooks = () => {
           ? formData.tags.split(",").map((tag) => tag.trim())
           : [],
         images: validImages,
+        weight: parseFloat(formData.weight),
       };
 
       // Remove empty optional fields
@@ -264,6 +267,7 @@ const PublishBooks = () => {
           featured: false,
           isbn: "",
           pages: "",
+          weight: "",
           country: "India",
           publicationDate: "",
         });
@@ -558,6 +562,26 @@ const PublishBooks = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   placeholder="0"
+                />
+              </div>
+
+              {/* Weight - NEW FIELD */}
+              <div>
+                <label
+                  htmlFor="weight"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Weight (grams) *
+                </label>
+                <input
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  value={formData.weight}
+                  required
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  placeholder="e.g., 500"
                 />
               </div>
 

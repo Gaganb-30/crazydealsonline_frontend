@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import HomePage from "./components/AllPages/Home/HomePage";
@@ -18,6 +17,8 @@ import BookCategory from "./components/AllPages/BooksCategory/BookCategory";
 import AboutUs from "./components/OtherPages/AboutUs";
 import Footer from "./components/Header/Footer"; // Import the Footer component
 import OAuthSuccess from "./components/Admin/OAuth/OAuthSuccess";
+import Checkout from "./components/AllPages/OrderPages/Checkout";
+import OrderSuccess from "./components/AllPages/OrderPages/OrderSuccess";
 
 // Layout component that includes the Header and Footer
 const Layout = ({ children }) => {
@@ -156,6 +157,10 @@ function App() {
 
           {/* OAuth Routes */}
           <Route path="/oauth-success" element={<OAuthSuccess />} />
+
+          {/* Checkout */}
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
         </Routes>
       </BrowserRouter>
     </div>

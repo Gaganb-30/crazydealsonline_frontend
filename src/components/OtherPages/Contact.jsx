@@ -41,7 +41,6 @@ const Contact = () => {
         }
       );
       const data = await response.json();
-      console.log(data, import.meta.env.VITE_API_URL);
 
       if (data.success) {
         setSuccess(data.message);

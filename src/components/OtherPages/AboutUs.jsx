@@ -52,39 +52,39 @@ const AboutUs = () => {
     },
   ];
 
-  const team = [
-    {
-      name: "Sarah Johnson",
-      role: "Founder & CEO",
-      image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      description:
-        "Passionate book lover with 10+ years in publishing industry.",
-    },
-    {
-      name: "Michael Chen",
-      role: "Head of Operations",
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      description: "Ensures smooth operations and customer satisfaction.",
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Content Curator",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      description:
-        "Literature expert who handpicks the best books for our collection.",
-    },
-    {
-      name: "David Kim",
-      role: "Customer Experience",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      description:
-        "Dedicated to making every customer interaction exceptional.",
-    },
-  ];
+  // const team = [
+  //   {
+  //     name: "Sarah Johnson",
+  //     role: "Founder & CEO",
+  //     image:
+  //       "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+  //     description:
+  //       "Passionate book lover with 10+ years in publishing industry.",
+  //   },
+  //   {
+  //     name: "Michael Chen",
+  //     role: "Head of Operations",
+  //     image:
+  //       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+  //     description: "Ensures smooth operations and customer satisfaction.",
+  //   },
+  //   {
+  //     name: "Emily Rodriguez",
+  //     role: "Content Curator",
+  //     image:
+  //       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+  //     description:
+  //       "Literature expert who handpicks the best books for our collection.",
+  //   },
+  //   {
+  //     name: "David Kim",
+  //     role: "Customer Experience",
+  //     image:
+  //       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+  //     description:
+  //       "Dedicated to making every customer interaction exceptional.",
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800">
