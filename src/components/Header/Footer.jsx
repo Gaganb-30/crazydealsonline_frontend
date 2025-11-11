@@ -58,15 +58,41 @@ const Footer = () => {
                   className="hover:text-navy"
                   onClick={() => navigate("/privacy-policy")}
                 >
-                  Privacy
+                  Privacy Policy
                 </button>
               </li>
               <li>
-                <button className="hover:text-navy">Policy</button>
+                <button
+                  className="hover:text-navy"
+                  onClick={() => navigate("/disclaimer")}
+                >
+                  Disclaimer
+                </button>
               </li>
-              {/* <li>
-                <button className="hover:text-navy">Condition</button>
-              </li> */}
+              <li>
+                <button
+                  className="hover:text-navy"
+                  onClick={() => navigate("/terms-and-conditions")}
+                >
+                  Terms and Conditions
+                </button>
+              </li>
+              <li>
+                <button
+                  className="hover:text-navy"
+                  onClick={() => navigate("/refund-policy")}
+                >
+                  Refund Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  className="hover:text-navy"
+                  onClick={() => navigate("/return-policy")}
+                >
+                  Return Policy
+                </button>
+              </li>
             </ul>
           </div>
         </div>

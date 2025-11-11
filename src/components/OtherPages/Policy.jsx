@@ -257,9 +257,6 @@ const Policy = () => {
             <Link to="/" className="hover:text-cyan-400 transition-colors">
               Home
             </Link>
-            <Link to="/faq" className="hover:text-cyan-400 transition-colors">
-              FAQ
-            </Link>
             <Link
               to="/contact-us"
               className="hover:text-cyan-400 transition-colors"
@@ -267,11 +264,35 @@ const Policy = () => {
               Contact
             </Link>
             <Link
+              to="/return-policy"
+              className="hover:text-cyan-400 transition-colors"
+            >
+              Return Policy
+            </Link>
+            <Link
+              to="/refund-policy"
+              className="hover:text-cyan-400 transition-colors"
+            >
+              Refund Policy
+            </Link>
+            <Link
+              to="/terms-and-conditions"
+              className="hover:text-cyan-400 transition-colors"
+            >
+              Terms and Conditions
+            </Link>
+            <Link
+              to="/disclaimer"
+              className="hover:text-cyan-400 transition-colors"
+            >
+              Disclaimer
+            </Link>
+            {/* <Link
               to="/donate"
               className="hover:text-cyan-400 transition-colors"
             >
               Donate
-            </Link>
+            </Link> */}
           </div>
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} CrazyDealsOnline. All rights reserved.

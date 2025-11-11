@@ -21,6 +21,10 @@ import Checkout from "./components/AllPages/OrderPages/Checkout";
 import OrderSuccess from "./components/AllPages/OrderPages/OrderSuccess";
 import OrderHistory from "./components/AllPages/OrderPages/OrderHistory";
 import OrderDetails from "./components/AllPages/OrderPages/OrderDetails";
+import ReturnPolicy from "./components/OtherPages/ReturnPolicy";
+import RefundPolicy from "./components/OtherPages/RefundPolicy";
+import Disclaimer from "./components/OtherPages/Disclaimer";
+import TermsAndConditions from "./components/OtherPages/TermsAndConditions";
 
 // Layout component that includes the Header and Footer
 const Layout = ({ children }) => {
@@ -129,6 +133,43 @@ function App() {
               </Layout>
             }
           />
+
+          <Route
+            path="/return-policy"
+            element={
+              <Layout>
+                <ReturnPolicy />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/refund-policy"
+            element={
+              <Layout>
+                <RefundPolicy />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/disclaimer"
+            element={
+              <Layout>
+                <Disclaimer />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/terms-and-conditions"
+            element={
+              <Layout>
+                <TermsAndConditions />
+              </Layout>
+            }
+          />
+
           <Route
             path="/contact-us"
             element={

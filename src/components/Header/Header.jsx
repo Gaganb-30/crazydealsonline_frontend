@@ -64,9 +64,9 @@ const Header = () => {
 
     try {
       const response = await fetch(
-        `${process.env.VITE_API_URL}/api/books/search?q=${encodeURIComponent(
-          query
-        )}&limit=5`
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/books/search?q=${encodeURIComponent(query)}&limit=5`
       );
 
       // Check if response is JSON
@@ -126,6 +126,7 @@ const Header = () => {
     { name: "Policy", href: "/privacy-policy", icon: Building },
     { name: "About Us", href: "/about-us", icon: Users },
     { name: "Contact Us", href: "/contact-us", icon: Mail },
+    { name: "My Orders", href: "/orders", icon: UserPen },
   ];
 
   return (
@@ -139,7 +140,7 @@ const Header = () => {
               <div className="flex-shrink-0 flex items-center">
                 <BookOpen className="h-8 w-8 text-blue-600" />
                 <span className="ml-2 text-xl font-bold text-gray-900">
-                  BookStore
+                  CrazyDealsOnline
                 </span>
               </div>
             </div>
@@ -350,10 +351,7 @@ const Header = () => {
           }}
         />
       )}
-      // In your navigation component
-      <Link to="/orders" className="text-gray-700 hover:text-blue-600">
-        My Orders
-      </Link>
+      {/* In your navigation component */}
     </header>
   );
 };
