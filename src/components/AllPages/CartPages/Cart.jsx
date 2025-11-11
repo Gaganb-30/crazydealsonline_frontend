@@ -242,7 +242,7 @@ const Cart = () => {
                   Login
                 </button>
                 <button
-                  onClick={() => navigate("/signup")}
+                  onClick={() => navigate("/sign-up")}
                   className="border-2 border-blue-500 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300"
                 >
                   Sign Up
