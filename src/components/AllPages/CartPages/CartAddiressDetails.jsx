@@ -2,13 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const CartAddressDetails = () => {
-  const [formData, setFormData] = useState({
+  const [addressFormData, setAddressFormData] = useState({
     hNo: "",
     street: "",
     city: "",
     state: "",
     zipCode: "",
     country: "India",
+  });
+  const [phoneFormData, setPhoneFormData] = useState({
+    phone: "",
+    optionalPhone: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,8 +48,19 @@ const CartAddressDetails = () => {
           if (data.success) {
             setUser(data.data.user);
             if (data.data.user.address) {
-              setFormData(data.data.user.address);
+              setAddressFormData(data.data.user.address);
             }
+            const phoneData = {
+              phone: "",
+              optionalPhone: "",
+            };
+            if (data.data.user.phone) {
+              phoneData.phone = data.data.user.phone;
+            }
+            if (data.data.user.optionalPhone) {
+              phoneData.optionalPhone = data.data.user.optionalPhone;
+            }
+            setPhoneFormData(phoneData);
           }
         }
       } catch (err) {
@@ -56,10 +71,19 @@ const CartAddressDetails = () => {
     fetchUserProfile();
   }, [navigate]);
 
-  const handleChange = (e) => {
+  const handleAddressChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setAddressFormData({
+      ...addressFormData,
+      [name]: value,
+    });
+    setError("");
+  };
+
+  const handlePhoneChange = (e) => {
+    const { name, value } = e.target;
+    setPhoneFormData({
+      ...phoneFormData,
       [name]: value,
     });
     setError("");
@@ -72,12 +96,17 @@ const CartAddressDetails = () => {
 
     // Validation
     if (
-      !formData.street ||
-      !formData.city ||
-      !formData.state ||
-      !formData.zipCode
+      !addressFormData.street ||
+      !addressFormData.city ||
+      !addressFormData.state ||
+      !addressFormData.zipCode
     ) {
       setError("Please fill all required address fields");
+      setLoading(false);
+      return;
+    }
+    if (!phoneFormData.phone) {
+      setError("Please provide phone number");
       setLoading(false);
       return;
     }
@@ -92,7 +121,10 @@ const CartAddressDetails = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ address: formData }),
+          body: JSON.stringify({
+            address: addressFormData,
+            phoneData: phoneFormData,
+          }),
         }
       );
 
@@ -105,7 +137,7 @@ const CartAddressDetails = () => {
           "user",
           JSON.stringify({
             ...currentUser,
-            address: formData,
+            address: addressFormData,
           })
         );
 
@@ -145,6 +177,45 @@ const CartAddressDetails = () => {
           )}
 
           <div className="space-y-4">
+            {/* Phone No */}
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Phone No. *
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="text"
+                required
+                value={phoneFormData.phone}
+                onChange={handlePhoneChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your phone no."
+              />
+            </div>
+
+            {/* optionalPhone No */}
+            <div>
+              <label
+                htmlFor="optionalPhone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Alt. Phone No.(Optional)
+              </label>
+              <input
+                id="optionalPhone"
+                name="optionalPhone"
+                type="text"
+                value={phoneFormData.optionalPhone}
+                onChange={handlePhoneChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Enter alternate phone number"
+              />
+            </div>
+
             {/* House No */}
             <div>
               <label
@@ -158,8 +229,8 @@ const CartAddressDetails = () => {
                 name="hNo"
                 type="text"
                 required
-                value={formData.hNo}
-                onChange={handleChange}
+                value={addressFormData.hNo}
+                onChange={handleAddressChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                 placeholder="Enter your street address"
               />
@@ -178,8 +249,8 @@ const CartAddressDetails = () => {
                 name="street"
                 type="text"
                 required
-                value={formData.street}
-                onChange={handleChange}
+                value={addressFormData.street}
+                onChange={handleAddressChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                 placeholder="Enter your street address"
               />
@@ -199,8 +270,8 @@ const CartAddressDetails = () => {
                   name="city"
                   type="text"
                   required
-                  value={formData.city}
-                  onChange={handleChange}
+                  value={addressFormData.city}
+                  onChange={handleAddressChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   placeholder="City"
                 />
@@ -218,8 +289,8 @@ const CartAddressDetails = () => {
                   name="state"
                   type="text"
                   required
-                  value={formData.state}
-                  onChange={handleChange}
+                  value={addressFormData.state}
+                  onChange={handleAddressChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   placeholder="State"
                 />
@@ -240,8 +311,8 @@ const CartAddressDetails = () => {
                   name="zipCode"
                   type="text"
                   required
-                  value={formData.zipCode}
-                  onChange={handleChange}
+                  value={addressFormData.zipCode}
+                  onChange={handleAddressChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   placeholder="ZIP Code"
                 />
@@ -257,8 +328,8 @@ const CartAddressDetails = () => {
                 <select
                   id="country"
                   name="country"
-                  value={formData.country}
-                  onChange={handleChange}
+                  value={addressFormData.country}
+                  onChange={handleAddressChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                 >
                   <option value="India">India</option>
