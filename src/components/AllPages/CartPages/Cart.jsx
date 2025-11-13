@@ -94,6 +94,61 @@ const Cart = () => {
     );
   };
 
+  // Calculate free delivery progress
+  const calculateFreeDeliveryProgress = () => {
+    const freeDeliveryThreshold = 1500;
+    const currentTotal = cart?.totalPrice || 0;
+
+    if (currentTotal >= freeDeliveryThreshold) {
+      return {
+        isFreeDelivery: true,
+        progress: 100,
+        message: "🎉 You've unlocked FREE delivery!",
+        amountNeeded: 0,
+        amountSaved: cart?.deliveryCharge || 0,
+      };
+    } else {
+      const amountNeeded = freeDeliveryThreshold - currentTotal;
+      const progress = (currentTotal / freeDeliveryThreshold) * 100;
+
+      return {
+        isFreeDelivery: false,
+        progress: Math.min(progress, 100),
+        message: `Add ₹${amountNeeded} more for FREE delivery`,
+        amountNeeded,
+      };
+    }
+  };
+
+  // Calculate discount percentage for a book
+  const calculateBookDiscount = (book) => {
+    if (!book.originalPrice || book.originalPrice <= book.price) return null;
+
+    const discountAmount = book.originalPrice - book.price;
+    const discountPercentage = Math.round(
+      (discountAmount / book.originalPrice) * 100
+    );
+
+    return {
+      discountAmount,
+      discountPercentage,
+      originalPrice: book.originalPrice,
+      currentPrice: book.price,
+    };
+  };
+
+  // Calculate total savings from book discounts
+  const calculateTotalBookSavings = () => {
+    const cartItems = cart?.cart?.items || cart?.items || [];
+    return cartItems.reduce((total, item) => {
+      const bookDiscount = calculateBookDiscount(item.book);
+      if (bookDiscount) {
+        return total + bookDiscount.discountAmount * item.quantity;
+      }
+      return total;
+    }, 0);
+  };
+
   // Handle proceed to checkout
   const handleProceedToCheckout = () => {
     if (!user || !isAddressComplete(user.address)) {
@@ -110,7 +165,6 @@ const Cart = () => {
     }
   };
 
-  // ... (rest of your existing functions: updateQuantity, removeItem, clearCart remain the same)
   // Update quantity
   const updateQuantity = async (bookId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -211,7 +265,6 @@ const Cart = () => {
     }
   };
 
-  // ... (rest of your existing loading, error, and empty cart states remain the same)
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
@@ -274,6 +327,11 @@ const Cart = () => {
   const totalItems = cart?.totalItems || cart?.cart?.totalItems || 0;
   const savings = cart?.savings || cart?.cart?.savings || 0;
 
+  // Calculate additional metrics
+  const freeDeliveryInfo = calculateFreeDeliveryProgress();
+  const totalBookSavings = calculateTotalBookSavings();
+  const totalSavings = totalBookSavings + savings;
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
@@ -329,6 +387,34 @@ const Cart = () => {
           <p className="text-gray-600 text-lg">
             Review your items and proceed to checkout
           </p>
+
+          {/* Free Delivery Progress Bar */}
+          <div className="mt-6 max-w-2xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-gray-700">
+                  {freeDeliveryInfo.message}
+                </span>
+                <span className="text-sm font-bold text-gray-900">
+                  ₹{totalPrice.toFixed(2)} / ₹1500
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${freeDeliveryInfo.progress}%` }}
+                ></div>
+              </div>
+              {freeDeliveryInfo.isFreeDelivery && (
+                <div className="mt-2 text-center">
+                  <span className="text-green-600 font-semibold text-sm">
+                    🎉 You're paying ₹{deliveryCharge} on delivery!
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Address Warning */}
           {user && !isAddressComplete(user.address) && (
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto">
@@ -362,168 +448,231 @@ const Cart = () => {
                 <h2 className="text-xl font-bold text-gray-900">
                   Cart Items ({cartItems.length})
                 </h2>
-                <button
-                  onClick={clearCart}
-                  className="text-red-600 hover:text-red-700 font-semibold text-sm flex items-center"
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="flex items-center space-x-4">
+                  {totalSavings > 0 && (
+                    <div className="text-green-600 font-semibold text-sm">
+                      Total Savings: ₹{totalSavings.toFixed(2)}
+                    </div>
+                  )}
+                  <button
+                    onClick={clearCart}
+                    className="text-red-600 hover:text-red-700 font-semibold text-sm flex items-center"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                  Clear Cart
-                </button>
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Clear Cart
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Cart Items List */}
             <div className="space-y-4">
-              {cartItems.map((item) => (
-                <div
-                  key={item.book?._id || item._id}
-                  className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="flex flex-col sm:flex-row gap-6">
-                    {/* Book Image */}
-                    <div
-                      className="flex-shrink-0 w-24 h-32 bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
-                      onClick={() => navigate(`/products/${item.book?._id}`)}
-                    >
-                      <img
-                        src={
-                          item.book?.images?.find((img) => img.isPrimary)
-                            ?.url ||
-                          item.book?.images?.[0]?.url ||
-                          "/placeholder-book.jpg"
-                        }
-                        alt={item.book?.title || "Book image"}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+              {cartItems.map((item) => {
+                const bookDiscount = calculateBookDiscount(item.book);
 
-                    {/* Book Details */}
-                    <div className="flex-grow">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                        <div className="flex-grow">
-                          <h3
-                            className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-blue-600 transition-colors"
-                            onClick={() =>
-                              navigate(`/products/${item.book?._id}`)
-                            }
-                          >
-                            {item.book?.title || "Unknown Book"}
-                          </h3>
-                          <p className="text-gray-600 text-sm mb-2">
-                            by {item.book?.author || "Unknown Author"}
-                          </p>
-                          <div className="flex items-center space-x-2 mb-3">
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
-                              {item.book?.format || "Unknown Format"}
-                            </span>
-                            <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                              {item.book?.category || "Unknown Category"}
-                            </span>
+                return (
+                  <div
+                    key={item.book?._id || item._id}
+                    className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-6">
+                      {/* Book Image */}
+                      <div
+                        className="flex-shrink-0 w-24 h-32 bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+                        onClick={() => navigate(`/products/${item.book?._id}`)}
+                      >
+                        <img
+                          src={
+                            item.book?.images?.find((img) => img.isPrimary)
+                              ?.url ||
+                            item.book?.images?.[0]?.url ||
+                            "/placeholder-book.jpg"
+                          }
+                          alt={item.book?.title || "Book image"}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Discount Badge on Image */}
+                        {bookDiscount && (
+                          <div className="absolute -top-2 -left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                            {bookDiscount.discountPercentage}% OFF
                           </div>
-                        </div>
-
-                        {/* Price */}
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-gray-900 mb-1">
-                            ₹
-                            {(
-                              (item.book?.price || item.price || 0) *
-                              item.quantity
-                            ).toFixed(2)}
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            ₹{(item.book?.price || item.price || 0).toFixed(2)}{" "}
-                            × {item.quantity}
-                          </p>
-                        </div>
+                        )}
                       </div>
 
-                      {/* Quantity Controls */}
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-gray-700 font-semibold">
-                            Quantity:
-                          </span>
-                          <div className="flex items-center space-x-2">
-                            <button
+                      {/* Book Details */}
+                      <div className="flex-grow">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                          <div className="flex-grow">
+                            <h3
+                              className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-blue-600 transition-colors"
                               onClick={() =>
-                                updateQuantity(
-                                  item.book?._id,
-                                  item.quantity - 1
-                                )
+                                navigate(`/products/${item.book?._id}`)
                               }
-                              disabled={
-                                updatingItems.has(item.book?._id) ||
-                                item.quantity <= 1
-                              }
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                              -
-                            </button>
-                            <span className="w-12 text-center font-semibold">
-                              {updatingItems.has(item.book?._id) ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto"></div>
-                              ) : (
-                                item.quantity
-                              )}
-                            </span>
-                            <button
-                              onClick={() =>
-                                updateQuantity(
-                                  item.book?._id,
-                                  item.quantity + 1
-                                )
-                              }
-                              disabled={updatingItems.has(item.book?._id)}
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            >
-                              +
-                            </button>
+                              {item.book?.title || "Unknown Book"}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-2">
+                              by {item.book?.author || "Unknown Author"}
+                            </p>
+                            <div className="flex items-center space-x-2 mb-3">
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                                {item.book?.format || "Unknown Format"}
+                              </span>
+                            </div>
+
+                            {/* Discount Information */}
+                            {bookDiscount && (
+                              <div className="flex items-center space-x-2 mb-2">
+                                <span className="text-sm text-gray-500 line-through">
+                                  ₹{bookDiscount.originalPrice.toFixed(2)}
+                                </span>
+                                <span className="text-green-600 font-semibold">
+                                  Save ₹
+                                  {(
+                                    bookDiscount.discountAmount * item.quantity
+                                  ).toFixed(2)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Price */}
+                          <div className="text-right">
+                            {bookDiscount ? (
+                              <>
+                                <p className="text-2xl font-bold text-gray-900 mb-1">
+                                  ₹
+                                  {(
+                                    (item.book?.price || item.price || 0) *
+                                    item.quantity
+                                  ).toFixed(2)}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                  ₹
+                                  {(
+                                    item.book?.price ||
+                                    item.price ||
+                                    0
+                                  ).toFixed(2)}{" "}
+                                  × {item.quantity}
+                                </p>
+                                <p className="text-green-600 text-sm font-semibold mt-1">
+                                  You save ₹
+                                  {(
+                                    bookDiscount.discountAmount * item.quantity
+                                  ).toFixed(2)}
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-2xl font-bold text-gray-900 mb-1">
+                                  ₹
+                                  {(
+                                    (item.book?.price || item.price || 0) *
+                                    item.quantity
+                                  ).toFixed(2)}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                  ₹
+                                  {(
+                                    item.book?.price ||
+                                    item.price ||
+                                    0
+                                  ).toFixed(2)}{" "}
+                                  × {item.quantity}
+                                </p>
+                              </>
+                            )}
                           </div>
                         </div>
 
-                        {/* Remove Button */}
-                        <button
-                          onClick={() => removeItem(item.book?._id)}
-                          disabled={updatingItems.has(item.book?._id)}
-                          className="text-red-600 hover:text-red-700 font-semibold text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {updatingItems.has(item.book?._id) ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
-                          ) : (
-                            <svg
-                              className="w-4 h-4 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
-                            </svg>
-                          )}
-                          Remove
-                        </button>
+                        {/* Quantity Controls */}
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-gray-700 font-semibold">
+                              Quantity:
+                            </span>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.book?._id,
+                                    item.quantity - 1
+                                  )
+                                }
+                                disabled={
+                                  updatingItems.has(item.book?._id) ||
+                                  item.quantity <= 1
+                                }
+                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                -
+                              </button>
+                              <span className="w-12 text-center font-semibold">
+                                {updatingItems.has(item.book?._id) ? (
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto"></div>
+                                ) : (
+                                  item.quantity
+                                )}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.book?._id,
+                                    item.quantity + 1
+                                  )
+                                }
+                                disabled={updatingItems.has(item.book?._id)}
+                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Remove Button */}
+                          <button
+                            onClick={() => removeItem(item.book?._id)}
+                            disabled={updatingItems.has(item.book?._id)}
+                            className="text-red-600 hover:text-red-700 font-semibold text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {updatingItems.has(item.book?._id) ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
+                            ) : (
+                              <svg
+                                className="w-4 h-4 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            )}
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -540,21 +689,50 @@ const Cart = () => {
                   <span>Subtotal ({totalItems} items)</span>
                   <span>₹{totalPrice.toFixed(2)}</span>
                 </div>
+
+                {/* Book Discounts */}
+                {totalBookSavings > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Book Discounts</span>
+                    <span>-₹{totalBookSavings.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {/* Coupon Discount */}
                 {savings > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
+                    <span>Coupon Discount</span>
                     <span>-₹{savings.toFixed(2)}</span>
                   </div>
                 )}
+
+                {/* Total Savings */}
+                {totalSavings > 0 && (
+                  <div className="flex justify-between text-green-600 font-semibold border-t border-gray-200 pt-2">
+                    <span>Total Savings</span>
+                    <span>-₹{totalSavings.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {/* Delivery Charge */}
                 <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span className="text-green-600">{deliveryCharge}</span>
-                </div>{" "}
-                {/* <div className="flex justify-between text-gray-600">
-                  <span>Tax (18%)</span>
-                  <span>₹{(totalPrice * 0.18).toFixed(2)}</span>
-                  {" "}
-                </div> */}
+                  <span>
+                    Delivery
+                    {freeDeliveryInfo.isFreeDelivery && (
+                      <span className="text-green-600 ml-1">(FREE)</span>
+                    )}
+                  </span>
+                  <span
+                    className={
+                      freeDeliveryInfo.isFreeDelivery ? "text-green-600" : ""
+                    }
+                  >
+                    {freeDeliveryInfo.isFreeDelivery
+                      ? "FREE"
+                      : `₹${deliveryCharge.toFixed(2)}`}
+                  </span>
+                </div>
+
                 <div className="border-t border-gray-200 pt-3">
                   <div className="flex justify-between text-lg font-bold text-gray-900">
                     <span>Total</span>
@@ -562,6 +740,17 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Savings Highlight */}
+              {totalSavings > 0 && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-center">
+                    <span className="text-green-700 font-semibold text-sm">
+                      🎉 You're saving ₹{totalSavings.toFixed(2)} on this order!
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Checkout Button */}
               <button
@@ -584,7 +773,7 @@ const Cart = () => {
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
                   <div className="text-center">
                     <div className="text-lg">🚚</div>
-                    <div>Free Shipping</div>
+                    <div>Free Shipping Over ₹1500</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg">🔒</div>
