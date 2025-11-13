@@ -27,6 +27,7 @@ const Header = () => {
   const inputRef = useRef(null);
 
   const navigate = useNavigate();
+
   // Debounced search function
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -122,8 +123,6 @@ const Header = () => {
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
     { name: "Books", href: "/categories", icon: Book },
-    // { name: 'Writers', href: '/writers', icon: UserPen },
-    { name: "Policy", href: "/privacy-policy", icon: Building },
     { name: "About Us", href: "/about-us", icon: Users },
     { name: "Contact Us", href: "/contact-us", icon: Mail },
     { name: "My Orders", href: "/orders", icon: UserPen },
@@ -131,24 +130,22 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 sm:px-6 lg:px-8">
         {/* Main Header */}
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/">
+          {/* Logo - Text hidden on small screens */}
+          <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <BookOpen className="h-8 w-8 text-blue-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">
-                  CrazyDealsOnline
-                </span>
-              </div>
+              <img src="logo.png" className="h-16 w-16 " />
+              <span className="ml-2 text-xl font-bold text-gray-900 hidden sm:block">
+                CrazyDealsOnline
+              </span>
             </div>
           </Link>
 
           {/* Desktop Navigation - Hidden when search is active */}
           {!isSearchActive && (
-            <nav className="hidden md:flex items-center space-x-8 ml-24">
+            <nav className="hidden md:flex items-center space-x-8 ml-8 lg:ml-24">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -168,7 +165,9 @@ const Header = () => {
           {/* Search Bar - Expands when active */}
           <div
             ref={searchRef}
-            className="flex items-center space-x-4 flex-1 justify-end"
+            className={`flex items-center space-x-2 sm:space-x-4 ${
+              isSearchActive ? "flex-1" : "justify-end"
+            }`}
           >
             {/* Search Container */}
             <div
@@ -351,7 +350,6 @@ const Header = () => {
           }}
         />
       )}
-      {/* In your navigation component */}
     </header>
   );
 };

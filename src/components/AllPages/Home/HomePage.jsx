@@ -415,7 +415,7 @@ const HomePage = () => {
                       className="w-full h-full object-contain"
                     />
                     {/* Format Badge */}
-                    <div className="absolute top-2 right-2 bg-navy text-white px-2 py-1 rounded-full text-xs font-semibold">
+                    <div className="absolute top-2 right-2 bg-navy text-yellow-600 px-3 py-2 rounded-full text-xs font-semibold">
                       {book.format || "Paperback"}
                     </div>
                   </div>
