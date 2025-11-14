@@ -27,6 +27,7 @@ import Disclaimer from "./components/OtherPages/Disclaimer";
 import TermsAndConditions from "./components/OtherPages/TermsAndConditions";
 import Profile from "./components/AllPages/Profile/Profile";
 import AdminDashboard from "./components/Admin/Dashboard/AdminDashboard";
+import BulkImport from "./components/Admin/BooksManagement/BulkImport";
 
 // Layout component that includes the Header and Footer
 const Layout = ({ children }) => {
@@ -120,10 +121,29 @@ function App() {
           />
 
           {/* Admin Routes - No Header/Footer */}
-          <Route path="/admin/books/publish" element={<Layout><PublishBooks /> </Layout>} />
+          <Route
+            path="/admin/books/publish"
+            element={
+              <Layout>
+                <PublishBooks />
+              </Layout>
+            }
+          />
           <Route
             path="/admin/books/update-book/:id"
-            element={<Layout> <UpdateBooks /> </Layout>}
+            element={
+              <Layout>
+                <UpdateBooks />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/books/bulk-upload"
+            element={
+              <Layout>
+                <BulkImport />
+              </Layout>
+            }
           />
 
           {/* User authentication routes */}
@@ -218,15 +238,35 @@ function App() {
             }
           />
 
-
           {/* OAuth Routes */}
           <Route path="/oauth-success" element={<OAuthSuccess />} />
 
           {/* Checkout */}
-          <Route path="/checkout" element={<Checkout />} />
+          <Route
+            path="/checkout"
+            element={
+              <Layout>
+                <Checkout />
+              </Layout>
+            }
+          />
           <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-          <Route path="/orders" element={<OrderHistory />} />
-          <Route path="/orders/:orderId" element={<OrderDetails />} />
+          <Route
+            path="/orders"
+            element={
+              <Layout>
+                <OrderHistory />
+              </Layout>
+            }
+          />
+          <Route
+            path="/orders/:orderId"
+            element={
+              <Layout>
+                <OrderDetails />
+              </Layout>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </div>
