@@ -330,19 +330,19 @@ const Signup = () => {
             />
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
               I agree to the{" "}
-              <a
-                href="#"
+              <Link
+                to="/terms-and-conditions"
                 className="text-green-600 hover:text-green-500 transition-colors"
               >
                 Terms and Conditions
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a
-                href="#"
+              <Link
+                to="/privacy-policy"
                 className="text-green-600 hover:text-green-500 transition-colors"
               >
                 Privacy Policy
-              </a>
+              </Link>
             </label>
           </div>
 
