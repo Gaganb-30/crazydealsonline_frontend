@@ -136,7 +136,10 @@ const Header = () => {
           {/* Logo - Text hidden on small screens */}
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
-              <img src="logo.png" className="h-16 w-16 " />
+              <img
+                src="https://res.cloudinary.com/dhnhc1khx/image/upload/v1763210578/logo_ys0rul.png"
+                className="h-16 w-16 "
+              />
               <span className="ml-2 text-xl font-bold text-gray-900 hidden sm:block">
                 CrazyDealsOnline
               </span>
@@ -291,9 +294,6 @@ const Header = () => {
                   className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
-                  </span>
                 </button>
 
                 {/* Login/User Icon */}
