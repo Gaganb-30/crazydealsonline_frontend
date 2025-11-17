@@ -291,7 +291,7 @@ const SingleBookPage = () => {
                 <p className="text-xl text-gray-600 mb-4">by {book.author}</p>
 
                 {/* Ratings */}
-                <div className="flex items-center space-x-2 mb-4">
+                {/* <div className="flex items-center space-x-2 mb-4">
                   <div className="flex text-yellow-400">
                     {"★".repeat(Math.floor(book.ratings.average) || 0)}
                     {"☆".repeat(5 - Math.floor(book.ratings.average) || 5)}
@@ -300,7 +300,7 @@ const SingleBookPage = () => {
                     ({book.ratings.count} review
                     {book.ratings.count !== 1 ? "s" : ""})
                   </span>
-                </div>
+                </div> */}
               </div>
 
               {/* Price Section */}

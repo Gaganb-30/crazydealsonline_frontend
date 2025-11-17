@@ -137,9 +137,11 @@ const Header = () => {
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
               <img
-                src="https://res.cloudinary.com/dhnhc1khx/image/upload/v1763210578/logo_ys0rul.png"
-                className="h-16 w-16 "
-              />
+                src="https://i.postimg.cc/7GhqH8ST/logo.png"
+                className="h-14"
+                border="0"
+                alt="logo"
+              ></img>
               <span className="ml-2 text-xl font-bold text-gray-900 hidden sm:block">
                 CrazyDealsOnline
               </span>

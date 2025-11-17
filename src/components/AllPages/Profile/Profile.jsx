@@ -14,6 +14,9 @@ import {
   LogOut,
   Eye,
   EyeOff,
+  Plus,
+  Upload,
+  LayoutDashboard,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -119,7 +122,7 @@ const Profile = () => {
       setOrdersLoading(true);
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/orders/my-orders`,
+        `${import.meta.env.VITE_API_URL}/api/orders`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -314,6 +317,22 @@ const Profile = () => {
     return addr.hNo && addr.street && addr.city && addr.state && addr.zipCode;
   };
 
+  // Admin button handlers
+  const handleBulkAdd = () => {
+    navigate("/admin/books/bulk-upload");
+  };
+
+  const handleSingleAdd = () => {
+    navigate("/admin/books/publish");
+  };
+
+  const handleDashboard = () => {
+    navigate("/admin/dashboard");
+  };
+
+  // Check if user is admin
+  const isAdmin = user?.role === "ADMIN";
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -347,13 +366,41 @@ const Profile = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <button
-              onClick={handleLogout}
-              className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              Logout
-            </button>
+            <div className="flex items-center space-x-4">
+              {/* Admin Buttons - Only shown for admin users */}
+              {isAdmin && (
+                <div className="flex items-center space-x-2 mr-4">
+                  <button
+                    onClick={handleBulkAdd}
+                    className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Bulk Upload
+                  </button>
+                  <button
+                    onClick={handleSingleAdd}
+                    className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Single Upload
+                  </button>
+                  <button
+                    onClick={handleDashboard}
+                    className="flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
