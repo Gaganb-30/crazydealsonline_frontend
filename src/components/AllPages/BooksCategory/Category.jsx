@@ -33,175 +33,103 @@ const Category = () => {
     fetchCategories();
   }, []);
 
-  // Category icons mapping
+  // Category icons with better emoji selection
   const categoryIcons = {
-    Science: "🔬",
+    Science: "🧪",
     History: "📜",
-    Fiction: "📖",
-    Kids: "🧸",
+    Fiction: "📚",
+    Kids: "🐻",
     Biography: "👤",
     Technology: "💻",
-    Business: "💼",
-    Health: "💊",
+    Business: "📊",
+    Health: "❤️",
     Travel: "✈️",
-    Cooking: "👨‍🍳",
+    Cooking: "🍳",
     Art: "🎨",
     Sports: "⚽",
-    Religion: "🙏",
-    Philosophy: "💭",
+    Religion: "🕊️",
+    Philosophy: "🤔",
     Education: "🎓",
   };
 
-  // Get icon for category
-  const getCategoryIcon = (category) => {
-    return categoryIcons[category] || "📚";
-  };
-
-  // Get gradient color based on category
+  // More refined gradient combinations
   const getCategoryGradient = (category, index) => {
     const gradients = [
-      "from-purple-500 via-purple-600 to-blue-600",
-      "from-green-500 via-green-600 to-teal-600",
-      "from-blue-500 via-blue-600 to-indigo-600",
-      "from-red-500 via-red-600 to-pink-600",
-      "from-yellow-500 via-yellow-600 to-orange-600",
-      "from-indigo-500 via-indigo-600 to-purple-600",
-      "from-pink-500 via-pink-600 to-rose-600",
-      "from-teal-500 via-teal-600 to-cyan-600",
-      "from-orange-500 via-orange-600 to-red-600",
-      "from-cyan-500 via-cyan-600 to-blue-600",
-      "from-rose-500 via-rose-600 to-pink-600",
-      "from-lime-500 via-lime-600 to-green-600",
-      "from-violet-500 via-violet-600 to-purple-600",
-      "from-amber-500 via-amber-600 to-yellow-600",
-      "from-emerald-500 via-emerald-600 to-green-600",
+      "from-purple-400 to-blue-500",
+      "from-emerald-400 to-cyan-500",
+      "from-blue-400 to-indigo-500",
+      "from-rose-400 to-pink-500",
+      "from-amber-400 to-orange-500",
+      "from-indigo-400 to-purple-500",
+      "from-pink-400 to-rose-500",
+      "from-cyan-400 to-blue-500",
+      "from-orange-400 to-red-500",
+      "from-teal-400 to-green-500",
+      "from-violet-400 to-purple-500",
+      "from-lime-400 to-green-500",
+      "from-sky-400 to-blue-500",
+      "from-fuchsia-400 to-purple-500",
+      "from-amber-400 to-yellow-500",
     ];
     return gradients[index % gradients.length];
   };
 
-  // Get category description
+  // Better category descriptions
   const getCategoryDescription = (category) => {
     const descriptions = {
-      Science:
-        "Discover the wonders of the universe and scientific breakthroughs",
-      History:
-        "Journey through time and explore the events that shaped our world",
-      Fiction: "Immerse yourself in imaginative worlds and captivating stories",
-      Kids: "Fun and educational books for young minds and curious children",
-      Biography:
-        "Inspiring stories of remarkable people and their life journeys",
-      Technology: "Cutting-edge innovations and digital world advancements",
-      Business: "Strategies, entrepreneurship and corporate success stories",
-      Health: "Wellness, medicine and healthy living guides",
-      Travel: "Explore the world through captivating travel experiences",
-      Cooking: "Culinary arts, recipes and gastronomic adventures",
-      Art: "Creative expressions, design and artistic masterpieces",
-      Sports: "Athletic achievements, training and sports legends",
-      Religion: "Spiritual wisdom and religious teachings",
-      Philosophy: "Deep thoughts and philosophical perspectives",
-      Education: "Learning resources and educational materials",
+      Science: "Explore scientific discoveries and the wonders of our universe",
+      History: "Journey through time and uncover the stories that shaped us",
+      Fiction: "Lose yourself in imaginative worlds and compelling narratives",
+      Kids: "Spark young imaginations with fun and educational stories",
+      Biography: "Discover inspiring lives and remarkable personal journeys",
+      Technology: "Stay ahead with insights into innovation and digital trends",
+      Business: "Master strategies for success in the corporate world",
+      Health: "Embrace wellness with guides to healthy living and medicine",
+      Travel: "Wander through captivating destinations and cultures",
+      Cooking:
+        "Create culinary masterpieces with expert recipes and techniques",
+      Art: "Immerse yourself in creative expression and visual masterpieces",
+      Sports: "Dive into athletic excellence and competitive spirit",
+      Religion: "Explore spiritual wisdom and religious traditions",
+      Philosophy: "Ponder life's big questions and profound ideas",
+      Education: "Expand your knowledge with learning resources and materials",
     };
-    return (
-      descriptions[category] || `Explore our collection of ${category} books`
-    );
+    return descriptions[category] || `Discover our ${category} collection`;
   };
 
-  // Category Card Component
-  const CategoryCard = ({ category, index }) => (
-    <div
-      className="relative group cursor-pointer transform transition-all duration-500 hover:scale-105"
-      onClick={() => navigate(`/collections/${category.toLowerCase()}`)}
-    >
-      {/* Main Card */}
-      <div
-        className={`bg-gradient-to-br ${getCategoryGradient(
-          category,
-          index
-        )} rounded-3xl p-8 h-64 flex flex-col justify-between text-white shadow-2xl hover:shadow-3xl transition-all duration-500 group-hover:rotate-1 border-2 border-white border-opacity-20`}
-      >
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 right-4 text-6xl opacity-50">
-            {getCategoryIcon(category)}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10">
-          {/* Icon */}
-          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-sm border border-white border-opacity-30">
-            <span className="text-2xl">{getCategoryIcon(category)}</span>
-          </div>
-
-          {/* Category Name */}
-          <h3 className="text-2xl font-bold mb-2 group-hover:text-white transition-colors duration-300">
-            {category}
-          </h3>
-
-          {/* Description */}
-          <p className="text-white text-opacity-80 text-sm leading-relaxed group-hover:text-opacity-100 transition-all duration-300">
-            {getCategoryDescription(category)}
-          </p>
-        </div>
-
-        {/* Explore Button */}
-        <div className="relative z-10 flex justify-between items-center mt-4">
-          <span className="text-white text-opacity-90 text-sm font-semibold group-hover:text-opacity-100 transition-all duration-300">
-            Explore Collection
-          </span>
-          <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center group-hover:bg-opacity-30 transition-all duration-300 backdrop-blur-sm">
-            <svg
-              className="w-4 h-4 text-white transform group-hover:translate-x-1 transition-transform duration-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* Shine Effect */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white via-10% to-transparent opacity-0 group-hover:opacity-10 group-hover:translate-x-full transition-all duration-1000"></div>
-      </div>
-
-      {/* Floating Elements */}
-      <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 delay-200"></div>
-      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-white rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 delay-300"></div>
-    </div>
-  );
-
+  // Loading component
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-700 mb-2">
-            Discovering Categories
-          </h2>
-          <p className="text-gray-500">Loading amazing book collections...</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-pulse flex space-x-2">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-150"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-300"></div>
+          </div>
+          <p className="text-slate-600 font-medium">Loading categories...</p>
         </div>
       </div>
     );
   }
 
+  // Error component
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">😔</div>
-          <h2 className="text-2xl font-bold text-gray-700 mb-4">
-            Oops! Something went wrong
-          </h2>
-          <p className="text-gray-500 mb-6">{error}</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md space-y-6">
+          <div className="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+            <span className="text-2xl">📚</span>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-slate-900">
+              Something went wrong
+            </h3>
+            <p className="text-slate-600">{error}</p>
+          </div>
           <button
             onClick={() => window.location.reload()}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors"
           >
             Try Again
           </button>
@@ -211,137 +139,175 @@ const Category = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              <span className="font-medium">Back to Home</span>
+            </button>
+            <h1 className="text-xl font-semibold text-slate-900">
+              Book Categories
+            </h1>
+            <div className="w-20"></div> {/* Spacer for balance */}
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white py-20 px-4 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-10 left-10 text-6xl">📚</div>
-          <div className="absolute top-20 right-20 text-5xl">🔍</div>
-          <div className="absolute bottom-20 left-20 text-4xl">⭐</div>
-          <div className="absolute bottom-10 right-10 text-6xl">🎯</div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-            Book Categories
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-            Explore our vast collection of books across different genres. Each
-            category holds unique stories waiting to be discovered.
+      <section className="bg-slate-900 text-white py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <h2 className="text-3xl sm:text-4xl font-bold">
+            Explore by Category
+          </h2>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            Find your next favorite book in our carefully curated collections
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={() => navigate("/")}
-              className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          <div className="flex items-center justify-center space-x-4 text-sm text-slate-400">
+            <span>{categories.length} categories</span>
+            <span>•</span>
+            <span>Thousands of books</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {categories.map((category, index) => (
+            <div
+              key={category}
+              onClick={() => navigate(`/collections/${category.toLowerCase()}`)}
+              className="group cursor-pointer"
             >
-              Back to Home
-            </button>
-            <button
-              onClick={() => navigate("/search")}
-              className="border-2 border-white text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-white hover:bg-opacity-20 transition-all duration-300"
-            >
-              Search Books
-            </button>
-          </div>
+              <div
+                className={`bg-gradient-to-br ${getCategoryGradient(
+                  category,
+                  index
+                )} rounded-2xl p-6 text-white shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105`}
+              >
+                {/* Icon */}
+                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                  <span className="text-xl">
+                    {categoryIcons[category] || "📖"}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <h3 className="font-semibold text-lg mb-2 capitalize">
+                  {category}
+                </h3>
+                <p className="text-white text-opacity-90 text-sm leading-relaxed mb-4">
+                  {getCategoryDescription(category)}
+                </p>
+
+                {/* CTA */}
+                <div className="flex items-center justify-between">
+                  <span className="text-white text-opacity-80 text-sm font-medium">
+                    Browse books
+                  </span>
+                  <svg
+                    className="w-4 h-4 text-white text-opacity-80 transform group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Animated floating shapes */}
-        <div className="absolute top-4 left-10 animate-bounce">
-          <div className="w-4 h-4 bg-white rounded-full opacity-30"></div>
-        </div>
-        <div className="absolute bottom-10 right-20 animate-pulse">
-          <div className="w-6 h-6 bg-white rounded-full opacity-20"></div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Header Stats */}
-        <div className="text-center mb-12">
-          <div className="inline-block bg-white rounded-2xl shadow-lg px-8 py-4 mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">
-              {categories.length} Categories
-            </h2>
-            <p className="text-gray-600">
-              Explore our diverse book collections
-            </p>
-          </div>
-        </div>
-
-        {/* Categories Grid */}
-        {categories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {categories.map((category, index) => (
-              <CategoryCard key={category} category={category} index={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <div className="text-8xl mb-6">📖</div>
-            <h3 className="text-3xl font-bold text-gray-800 mb-4">
-              No Categories Found
+        {/* Empty State */}
+        {categories.length === 0 && (
+          <div className="text-center py-12 space-y-4">
+            <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center">
+              <span className="text-2xl">📚</span>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              No categories available
             </h3>
-            <p className="text-gray-600 mb-8 text-lg">
-              We're working on adding more categories to our collection.
+            <p className="text-slate-600 max-w-md mx-auto">
+              We're currently organizing our book collections. Please check back
+              soon.
             </p>
-            <button
-              onClick={() => navigate("/")}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              Browse All Books
-            </button>
           </div>
         )}
 
-        {/* Call to Action */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl p-12 text-center text-white mt-16 shadow-2xl relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-4 left-4 text-4xl">🌟</div>
-            <div className="absolute bottom-4 right-4 text-4xl">📚</div>
-          </div>
-
-          <div className="relative z-10">
-            <h2 className="text-4xl font-bold mb-4">
-              Can't Find What You're Looking For?
-            </h2>
-            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Use our advanced search to find specific books or contact us for
-              special requests.
+        {/* Search CTA */}
+        <div className="mt-12 text-center">
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 max-w-2xl mx-auto">
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Looking for something specific?
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Use our search to find exactly what you're looking for
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => navigate("/search")}
-                className="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            <button
+              onClick={() => navigate("/search")}
+              className="bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors inline-flex items-center space-x-2"
+            >
+              <span>Search Books</span>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                Advanced Search
-              </button>
-              <button
-                onClick={() => navigate("/contact-us")}
-                className="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:bg-opacity-20 transition-all duration-300"
-              >
-                Contact Us
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12 mt-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">Book Categories</h3>
-          <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-            Your gateway to endless stories and knowledge across all genres and
-            interests.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-400">
-            <span>© 2024 Crazy Deals Online</span>
-            <span className="hidden sm:block">•</span>
-            <span>Privacy Policy</span>
-            <span className="hidden sm:block">•</span>
-            <span>Terms of Service</span>
+      <footer className="bg-white border-t border-slate-200 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center space-x-8 text-sm text-slate-600">
+              <span>© 2024 BookStore</span>
+              <span>•</span>
+              <button className="hover:text-slate-900 transition-colors">
+                Privacy
+              </button>
+              <span>•</span>
+              <button className="hover:text-slate-900 transition-colors">
+                Terms
+              </button>
+            </div>
+            <p className="text-slate-500 text-sm">
+              Discover your next great read with us
+            </p>
           </div>
         </div>
       </footer>

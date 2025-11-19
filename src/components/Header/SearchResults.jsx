@@ -69,8 +69,7 @@ const SearchResults = () => {
       }
 
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books/search?q=${encodeURIComponent(
           searchQuery
         )}&page=${currentPage}&limit=${itemsPerPage}&sort=${sortField}&order=${sortOrder}`
@@ -116,9 +115,8 @@ const SearchResults = () => {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-3 w-3 ${
-              star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
-            }`}
+            className={`h-3 w-3 ${star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+              }`}
           />
         ))}
         <span className="ml-1 text-sm text-gray-600">({rating})</span>
@@ -148,14 +146,7 @@ const SearchResults = () => {
           </h3>
           <p className="text-sm text-gray-600 mb-2">by {book.author}</p>
 
-          {book.ratings && (
-            <div className="flex items-center mb-2">
-              {renderStars(book.ratings.average || 0)}
-              <span className="text-xs text-gray-500 ml-1">
-                ({book.ratings.count || 0})
-              </span>
-            </div>
-          )}
+
 
           <div className="flex items-center justify-between">
             <div>
@@ -264,11 +255,10 @@ const SearchResults = () => {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-2 rounded-md text-sm font-medium ${
-            currentPage === i
+          className={`px-3 py-2 rounded-md text-sm font-medium ${currentPage === i
               ? "bg-blue-600 text-white"
               : "text-gray-700 hover:bg-gray-100"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -391,21 +381,19 @@ const SearchResults = () => {
               <div className="flex border border-gray-300 rounded-md overflow-hidden">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 ${
-                    viewMode === "grid"
+                  className={`p-2 ${viewMode === "grid"
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-600"
-                  }`}
+                    }`}
                 >
                   <Grid className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 ${
-                    viewMode === "list"
+                  className={`p-2 ${viewMode === "list"
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-600"
-                  }`}
+                    }`}
                 >
                   <List className="h-4 w-4" />
                 </button>

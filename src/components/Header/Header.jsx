@@ -142,9 +142,6 @@ const Header = () => {
                 border="0"
                 alt="logo"
               ></img>
-              <span className="ml-2 text-xl font-bold text-gray-900 hidden sm:block">
-                CrazyDealsOnline
-              </span>
             </div>
           </Link>
 

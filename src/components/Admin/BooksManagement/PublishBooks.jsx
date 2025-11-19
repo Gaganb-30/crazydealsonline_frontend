@@ -31,36 +31,6 @@ const PublishBooks = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
 
-  // Categories for dropdown
-  const categories = [
-    "Fiction",
-    "Non-Fiction",
-    "Science",
-    "Technology",
-    "Biography",
-    "History",
-    "Self-Help",
-    "Business",
-    "Children",
-    "Young Adult",
-    "Romance",
-    "Mystery",
-    "Thriller",
-    "Fantasy",
-    "Science Fiction",
-    "Horror",
-    "Poetry",
-    "Drama",
-    "Cookbooks",
-    "Travel",
-    "Religion",
-    "Art",
-    "Music",
-    "Education",
-    "Health",
-    "Sports",
-  ];
-
   const formats = ["Paperback", "Hardcover"];
 
   // Check if user is admin
@@ -436,21 +406,16 @@ const PublishBooks = () => {
                 >
                   Category *
                 </label>
-                <select
+                <input
+                  type="text"
                   id="category"
                   name="category"
                   required
                   value={formData.category}
                   onChange={handleChange}
+                  placeholder="Enter book category"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                ></input>
               </div>
 
               {/* Format */}

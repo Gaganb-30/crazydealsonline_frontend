@@ -19,5 +19,9 @@ export default defineConfig(({ mode }) => {
       port: 8080, // must match your aaPanel config
       allowedHosts: ["crazydealsonline.in"], // ✅ allow your domain
     },
+    server: {
+      host: true, // <-- exposes to network
+      port: 5173, // optional
+    },
   };
 });
