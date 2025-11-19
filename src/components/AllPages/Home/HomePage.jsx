@@ -59,27 +59,6 @@ const HomePage = () => {
     },
   ];
 
-  const feedbacks = [
-    {
-      id: 1,
-      text: "Bookish is a breath of fresh air in the digital reading space. The design is clean, organized, and makes browsing feel effortless. I especially love the seamless integration with various reading devices and the personalized recommendations.",
-      author: "Aroma Kane",
-      role: "Senior Consultant",
-      rating: 5,
-      image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-    },
-    {
-      id: 2,
-      text: "I was instantly drawn to the elegance of Bookish. The interface is smooth, responsive, and intuitively designed. Whether searching through catalogs or checking the designer's selections, I don't need to figure out navigation.",
-      author: "Fanny Osinski",
-      role: "Brand Architect",
-      rating: 5,
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-    },
-  ];
-
   // Fetch latest books
   const fetchLatestBooks = async () => {
     try {
@@ -249,7 +228,8 @@ const HomePage = () => {
   };
 
   // Add to cart function for featured book
-  const addToCart = async (bookId) => {
+  {
+    /* const addToCart = async (bookId) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -287,7 +267,8 @@ const HomePage = () => {
       console.error("Error adding to cart:", err);
       alert("Failed to add book to cart");
     }
-  };
+  }; */
+  }
 
   if (loading) {
     return (
@@ -509,24 +490,22 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Latest Books Slider - Responsive */}
-      <section className="px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-navy text-center sm:text-left">
-            Latest Books
-          </h2>
+      {/* Latest Books Slider */}
+      <section className="px-8 py-12">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-navy">Latest Books</h2>
           <div className="flex gap-3">
             <button
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
               onClick={prevSlide}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={18} />
             </button>
             <button
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
               onClick={nextSlide}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>
@@ -537,15 +516,15 @@ const HomePage = () => {
           </div>
         ) : latestBooks.length > 0 ? (
           <div className="relative">
-            {/* Slide Container - Responsive grid */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+            {/* Slide Container - Exact grid from your example */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {getCurrentSlideBooks().map((book) => (
                 <div
                   key={book._id}
                   className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer flex flex-col h-full"
                   onClick={() => navigate(`/products/${book._id}`)}
                 >
-                  {/* Image Container */}
+                  {/* Image Container - Exact styling from your example */}
                   <div className="relative aspect-[3/4] bg-gray-100 flex items-center justify-center p-4">
                     <img
                       src={
@@ -560,24 +539,13 @@ const HomePage = () => {
                       className="w-full h-full object-contain"
                     />
                     {/* Format Badge */}
-                    <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                    <div className="absolute top-2 right-2 bg-navy text-white bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-1 rounded-full text-xs font-semibold">
                       {book.format || "Paperback"}
                     </div>
-                    {/* Discount Badge */}
-                    {book.originalPrice && book.originalPrice > book.price && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                        {Math.round(
-                          ((book.originalPrice - book.price) /
-                            book.originalPrice) *
-                            100
-                        )}
-                        % OFF
-                      </div>
-                    )}
                   </div>
 
-                  {/* Content */}
-                  <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                  {/* Content - Exact styling from your example */}
+                  <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 leading-tight">
                       {book.title}
                     </h3>
@@ -585,19 +553,19 @@ const HomePage = () => {
                       {book.author}
                     </p>
 
-                    <div className="flex items-center justify-between mb-3 sm:mb-4">
-                      <span className="text-base sm:text-lg font-bold text-gray-900">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-lg font-bold text-gray-900">
                         ₹{book.price}
                       </span>
                       {book.originalPrice &&
                         book.originalPrice > book.price && (
-                          <span className="text-xs text-gray-500 line-through">
+                          <span className="text-sm text-gray-500 line-through">
                             ₹{book.originalPrice}
                           </span>
                         )}
                     </div>
 
-                    {/* Buttons */}
+                    {/* Buttons - Styled to match your example */}
                     <div className="mt-auto space-y-2">
                       <button
                         className="w-full border border-gray-300 text-gray-700 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-1"
@@ -616,11 +584,11 @@ const HomePage = () => {
             </div>
 
             {/* Slide Indicators */}
-            <div className="flex justify-center mt-6 sm:mt-8 space-x-2">
+            <div className="flex justify-center mt-8 space-x-2">
               {[0, 1, 2].map((index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
+                  className={`w-3 h-3 rounded-full transition-colors ${
                     currentSlide === index ? "bg-navy" : "bg-gray-300"
                   }`}
                   onClick={() => setCurrentSlide(index)}
