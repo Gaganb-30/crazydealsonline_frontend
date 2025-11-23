@@ -59,6 +59,11 @@ const HomePage = () => {
     },
   ];
 
+  // FIX: Scroll to top when component mounts or id changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
+
   // Fetch latest books
   const fetchLatestBooks = async () => {
     try {

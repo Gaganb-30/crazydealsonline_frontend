@@ -14,6 +14,11 @@ const SingleBookPage = () => {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // FIX: Scroll to top when component mounts or id changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   // Fetch single book by ID
   useEffect(() => {
     const fetchBook = async () => {
@@ -343,35 +348,53 @@ const SingleBookPage = () => {
                   : "✗ Out of Stock"}
               </div>
 
-              {/* Key Details */}
-              <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
-                <div>
-                  <span className="text-gray-600">Format:</span>
-                  <span className="ml-2 font-semibold">{book.format}</span>
+              {/* Key Details - FIXED GRID FOR MOBILE */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 py-4 border-y border-gray-200">
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    Format:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
+                    {book.format}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">Publisher:</span>
-                  <span className="ml-2 font-semibold">{book.publisher}</span>
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    Publisher:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
+                    {book.publisher}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">Language:</span>
-                  <span className="ml-2 font-semibold">{book.language}</span>
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    Language:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
+                    {book.language}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">Pages:</span>
-                  <span className="ml-2 font-semibold">
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    Pages:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.pages}
                   </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">ISBN:</span>
-                  <span className="ml-2 font-semibold">
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    ISBN:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.isbn}
                   </span>
                 </div>
-                <div>
-                  <span className="text-gray-600">Country:</span>
-                  <span className="ml-2 font-semibold">
+                <div className="flex justify-between sm:block">
+                  <span className="text-gray-600 text-sm sm:text-base">
+                    Country:
+                  </span>
+                  <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.country}
                   </span>
                 </div>
@@ -450,7 +473,7 @@ const SingleBookPage = () => {
 
               {/* Quick Info */}
               <div className="bg-blue-50 rounded-xl p-4">
-                <div className="flex items-center space-x-4 text-sm text-gray-700">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm text-gray-700 space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-1">
                     <span>🚚</span>
                     <span>Free delivery</span>
