@@ -246,14 +246,20 @@ const SingleBookPage = () => {
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            {/* Image Gallery */}
+            {/* Image Gallery - FIXED SECTION */}
             <div className="space-y-4">
-              {/* Main Image */}
-              <div className="bg-gray-100 rounded-xl overflow-hidden">
+              {/* Main Image Container - Fixed to prevent zooming */}
+              <div className="bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center p-8 min-h-96">
                 <img
                   src={book.images[selectedImage]?.url}
                   alt={book.images[selectedImage]?.alt || book.title}
-                  className="w-full h-96 object-cover"
+                  className="max-w-full max-h-80 object-contain drop-shadow-lg"
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    maxWidth: "100%",
+                    maxHeight: "320px",
+                  }}
                 />
               </div>
 
@@ -264,7 +270,7 @@ const SingleBookPage = () => {
                     <button
                       key={image._id}
                       onClick={() => setSelectedImage(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 bg-gray-50 flex items-center justify-center p-2 ${
                         selectedImage === index
                           ? "border-blue-500"
                           : "border-gray-200"
@@ -273,7 +279,11 @@ const SingleBookPage = () => {
                       <img
                         src={image.url}
                         alt={image.alt}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
                       />
                     </button>
                   ))}

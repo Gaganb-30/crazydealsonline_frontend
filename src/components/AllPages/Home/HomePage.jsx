@@ -83,7 +83,7 @@ const HomePage = () => {
     }
   };
 
-  // ✅ UPDATED: Fetch featured books using dedicated endpoint
+  // Fetch featured books using dedicated endpoint
   const fetchFeaturedBooks = async () => {
     try {
       setFeaturedBooksLoading(true);
@@ -96,7 +96,6 @@ const HomePage = () => {
       if (data.success) {
         setFeaturedBooks(data.data.books || []);
       } else {
-        // Fallback to latest books if featured endpoint fails
         console.warn(
           "Featured books endpoint failed, using latest books as fallback"
         );
@@ -108,7 +107,6 @@ const HomePage = () => {
       }
     } catch (err) {
       console.error("Error fetching featured books:", err);
-      // Use latest books as fallback
       if (latestBooks.length > 0) {
         setFeaturedBooks(latestBooks.slice(0, 10));
       }
@@ -154,7 +152,7 @@ const HomePage = () => {
     fetchLatestBooks();
   }, []);
 
-  // ✅ UPDATED: Fetch featured books when latest books are loaded
+  // Fetch featured books when latest books are loaded
   useEffect(() => {
     if (!loading) {
       fetchFeaturedBooks();
@@ -168,7 +166,7 @@ const HomePage = () => {
         setCurrentFeaturedBook((prev) =>
           prev === featuredBooks.length - 1 ? 0 : prev + 1
         );
-      }, 5000); // Change book every 5 seconds
+      }, 5000);
 
       return () => clearInterval(interval);
     }
@@ -176,7 +174,7 @@ const HomePage = () => {
 
   // Slider navigation for latest books
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % 3); // 3 slides for 18 books (6 per slide)
+    setCurrentSlide((prev) => (prev + 1) % 3);
   };
 
   const prevSlide = () => {
@@ -208,67 +206,14 @@ const HomePage = () => {
     return featuredBooks[currentFeaturedBook];
   };
 
-  // ✅ NEW: Get background image for current featured book
-  const getFeaturedBookBackground = () => {
-    const currentBook = getCurrentFeaturedBook();
-    if (!currentBook) {
-      return 'url("https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80")';
-    }
-
-    const bookImage =
-      currentBook.images?.find((img) => img.isPrimary)?.url ||
-      currentBook.images?.[0]?.url;
-
-    if (bookImage) {
-      return `url("${bookImage}")`;
-    }
-
-    // Fallback background
-    return 'url("https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80")';
+  // Get book image URL
+  const getBookImageUrl = (book) => {
+    return (
+      book.images?.find((img) => img.isPrimary)?.url ||
+      book.images?.[0]?.url ||
+      "/book-placeholder.jpg"
+    );
   };
-
-  // Add to cart function for featured book
-  {
-    /* const addToCart = async (bookId) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login", {
-          state: {
-            message: "Please login to add items to cart",
-            redirectTo: "/",
-          },
-        });
-        return;
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/cart/add`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ bookId, quantity: 1 }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Show success message
-          alert("Book added to cart successfully!");
-        }
-      } else {
-        throw new Error("Failed to add to cart");
-      }
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      alert("Failed to add book to cart");
-    }
-  }; */
-  }
 
   if (loading) {
     return (
@@ -301,7 +246,7 @@ const HomePage = () => {
 
   return (
     <div className="w-full bg-cream overflow-x-hidden">
-      {/* Hero Section - Responsive */}
+      {/* Hero Section - UPDATED */}
       <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16 bg-cream">
         <div className="flex-1 lg:pr-8 text-center lg:text-left mb-8 lg:mb-0">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy mb-4 leading-tight">
@@ -339,106 +284,68 @@ const HomePage = () => {
         </div>
 
         <div className="flex-1 relative w-full max-w-2xl">
-          {/* ✅ UPDATED: Dynamic Background Book Image */}
-          <div
-            className="bg-cover bg-center rounded-3xl p-8 sm:p-12 relative z-10 min-h-64 sm:min-h-80 md:min-h-96 transition-all duration-1000 ease-in-out"
-            style={{
-              backgroundImage: getFeaturedBookBackground(),
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "#fef3c7", // fallback color
-            }}
-          >
-            <div className="absolute inset-0 bg-black bg-opacity-30 rounded-3xl"></div>
-            <div className="relative z-10 flex justify-center items-center h-full">
-              {/* Optional: Overlay content can go here */}
-            </div>
+          {/* UPDATED: Book Display Container */}
+          <div className="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-3xl p-6 sm:p-8 relative z-10 min-h-64 sm:min-h-80 md:min-h-96 flex items-center justify-center">
+            {featuredBooksLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy"></div>
+              </div>
+            ) : currentFeatured ? (
+              <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full">
+                {/* Book Image - Properly displayed without cover/zoom */}
+                <div className="flex-shrink-0 w-32 h-40 sm:w-40 sm:h-52 md:w-48 md:h-60 bg-white rounded-lg shadow-lg p-2 flex items-center justify-center">
+                  <img
+                    src={getBookImageUrl(currentFeatured)}
+                    alt={currentFeatured.title}
+                    className="w-full h-full object-contain rounded"
+                  />
+                </div>
+
+                {/* Book Info */}
+                <div className="text-center md:text-left max-w-md">
+                  <h3 className="text-xl sm:text-2xl font-bold text-navy mb-2 line-clamp-2">
+                    {currentFeatured.title}
+                  </h3>
+                  <p className="text-gray-600 mb-2 text-sm sm:text-base">
+                    by {currentFeatured.author}
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
+                    {currentFeatured.about ||
+                      "Discover this amazing book from our collection."}
+                  </p>
+
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                    <p className="text-xl sm:text-2xl font-bold text-navy">
+                      ₹{currentFeatured.price?.toFixed(2) || ""}
+                    </p>
+                    {currentFeatured.originalPrice &&
+                      currentFeatured.originalPrice > currentFeatured.price && (
+                        <p className="text-sm text-gray-500 line-through">
+                          ₹{currentFeatured.originalPrice.toFixed(2)}
+                        </p>
+                      )}
+                  </div>
+
+                  {/* View Details Button - Now clickable */}
+                  <button
+                    className="flex items-center bg-navy text-gray-600 py-2 rounded-lg font-medium hover:bg-opacity-90 hover:underline transition-colors duration-300 text-sm sm:text-base"
+                    onClick={() => navigate(`/products/${currentFeatured._id}`)}
+                  >
+                    <Eye className="mr-2" size={15}></Eye>
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                <p>No featured books available</p>
+              </div>
+            )}
           </div>
 
-          {/* ✅ DYNAMIC Floating Book Card */}
-          {featuredBooksLoading ? (
-            <div className="lg:absolute bottom-0 right-0 bg-white rounded-2xl p-6 shadow-lg w-full sm:w-80 lg:w-72 z-20 mt-4 lg:mt-0 flex items-center justify-center min-h-48">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-navy mx-auto mb-2"></div>
-                <p className="text-gray-600 text-sm">
-                  Loading featured book...
-                </p>
-              </div>
-            </div>
-          ) : currentFeatured ? (
-            <div className="opacity-75 lg:absolute bottom-0 right-0 bg-white rounded-2xl p-4 sm:p-6 shadow-lg w-full sm:w-80 lg:w-72 z-20 mt-4 lg:mt-0 hover:shadow-xl transition-all duration-300">
-              <div className="text-center">
-                {/* Book Title */}
-                <h3 className="text-lg sm:text-xl font-bold text-navy mb-2 line-clamp-2">
-                  {currentFeatured.title}
-                </h3>
-
-                {/* Book Description */}
-                <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-3">
-                  {currentFeatured.author} -{" "}
-                  {currentFeatured.about ||
-                    "Discover this amazing book from our collection."}
-                </p>
-
-                {/* Price with Discount */}
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <p className="text-xl sm:text-2xl font-bold text-navy">
-                    ₹{currentFeatured.price?.toFixed(2) || ""}
-                  </p>
-                  {currentFeatured.originalPrice &&
-                    currentFeatured.originalPrice > currentFeatured.price && (
-                      <p className="text-sm text-gray-500 line-through">
-                        ₹{currentFeatured.originalPrice.toFixed(2)}
-                      </p>
-                    )}
-                </div>
-
-                {/* Add to Cart Button */}
-                {/* <button
-                  className="w-full bg-navy text-black py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base flex items-center justify-center gap-2"
-                  onClick={() => addToCart(currentFeatured._id)}
-                >
-                  <ShoppingBag size={16} />
-                  Add to bag
-                </button> */}
-
-                {/* View Details Link */}
-                <button
-                  className="w-full mt-2 text-navy text-sm font-medium hover:underline"
-                  onClick={() => navigate(`/products/${currentFeatured._id}`)}
-                >
-                  View Details →
-                </button>
-              </div>
-
-              {/* Book Progress Indicators */}
-              {featuredBooks.length > 1 && (
-                <div className="flex justify-center mt-4 space-x-1">
-                  {featuredBooks.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        currentFeaturedBook === index
-                          ? "bg-navy w-4"
-                          : "bg-gray-300"
-                      }`}
-                      onClick={() => setCurrentFeaturedBook(index)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="lg:absolute bottom-0 right-0 bg-white rounded-2xl p-6 shadow-lg w-full sm:w-80 lg:w-72 z-20 mt-4 lg:mt-0">
-              <div className="text-center text-gray-500">
-                <p className="text-sm">No featured books available</p>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation Buttons for Featured Books */}
+          {/* UPDATED: Navigation Buttons - Fixed positioning */}
           {featuredBooks.length > 1 && (
-            <div className="flex absolute left-6 right-6 bottom-6 justify-between z-30">
+            <div className="flex justify-between mt-4 z-20 relative">
               <button
                 className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-300 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors duration-300 shadow-lg"
                 onClick={prevFeaturedBook}
@@ -451,6 +358,23 @@ const HomePage = () => {
               >
                 <ChevronRight size={18} />
               </button>
+            </div>
+          )}
+
+          {/* Progress Indicators */}
+          {featuredBooks.length > 1 && (
+            <div className="flex justify-center mt-4 space-x-2 z-10 relative">
+              {featuredBooks.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    currentFeaturedBook === index
+                      ? "bg-gray-600 w-4"
+                      : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentFeaturedBook(index)}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -516,7 +440,6 @@ const HomePage = () => {
           </div>
         ) : latestBooks.length > 0 ? (
           <div className="relative">
-            {/* Slide Container - Exact grid from your example */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {getCurrentSlideBooks().map((book) => (
                 <div
@@ -524,27 +447,17 @@ const HomePage = () => {
                   className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer flex flex-col h-full"
                   onClick={() => navigate(`/products/${book._id}`)}
                 >
-                  {/* Image Container - Exact styling from your example */}
                   <div className="relative aspect-[3/4] bg-gray-100 flex items-center justify-center p-4">
                     <img
-                      src={
-                        book.images?.find((img) => img.isPrimary)?.url ||
-                        book.images?.[0]?.url ||
-                        "/book-placeholder.jpg"
-                      }
-                      alt={
-                        book.images?.find((img) => img.isPrimary)?.alt ||
-                        book.title
-                      }
+                      src={getBookImageUrl(book)}
+                      alt={book.title}
                       className="w-full h-full object-contain"
                     />
-                    {/* Format Badge */}
                     <div className="absolute top-2 right-2 bg-navy text-white bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-1 rounded-full text-xs font-semibold">
                       {book.format || "Paperback"}
                     </div>
                   </div>
 
-                  {/* Content - Exact styling from your example */}
                   <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 leading-tight">
                       {book.title}
@@ -565,7 +478,6 @@ const HomePage = () => {
                         )}
                     </div>
 
-                    {/* Buttons - Styled to match your example */}
                     <div className="mt-auto space-y-2">
                       <button
                         className="w-full border border-gray-300 text-gray-700 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-1"
@@ -583,7 +495,6 @@ const HomePage = () => {
               ))}
             </div>
 
-            {/* Slide Indicators */}
             <div className="flex justify-center mt-8 space-x-2">
               {[0, 1, 2].map((index) => (
                 <button
