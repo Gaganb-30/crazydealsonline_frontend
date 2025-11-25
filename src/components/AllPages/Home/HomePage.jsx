@@ -23,6 +23,27 @@ const HomePage = () => {
   const [currentFeaturedBook, setCurrentFeaturedBook] = useState(0);
   const navigate = useNavigate();
 
+  // User profile images for the circles
+  const userProfiles = [
+    "https://i.postimg.cc/Y0rnSt6q/Chat-GPT-Image-Nov-25-2025-10-50-27-AM.png",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80",
+    "https://i.postimg.cc/Y0dXGTRH/Chat-GPT-Image-Nov-25-2025-10-51-00-AM.png",
+  ];
+
+  // Background images for promo boxes
+  const promoBackgrounds = {
+    newPublications:
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    historySale:
+      "https://images.stockcake.com/public/5/b/1/5b16cd96-8b6f-4e5f-a38a-7d8dbd520b8f_large/ancient-opened-book-stockcake.jpg",
+    topRated:
+      "https://m.media-amazon.com/images/S/aplus-media/sc/2ce7adda-89e2-4bb9-ba9c-da55e052226e.__CR367,0,2229,1672_PT0_SX800_V1___.jpg",
+  };
+
+  // Quote section background
+  const quoteBackground =
+    "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80";
+
   // Categories to display with their routes and images
   const categories = [
     {
@@ -58,11 +79,6 @@ const HomePage = () => {
       color: "bg-pink-100",
     },
   ];
-
-  // FIX: Scroll to top when component mounts or id changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  });
 
   // Fetch latest books
   const fetchLatestBooks = async () => {
@@ -137,7 +153,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (data.success) {
-              categoryBooks[category.name] = data.data.books;
+              categoryBooks[category.name] = data.data;
             }
           } catch (err) {
             console.error(`Error fetching ${category.name} books:`, err);
@@ -252,7 +268,7 @@ const HomePage = () => {
   return (
     <div className="w-full bg-cream overflow-x-hidden">
       {/* Hero Section - UPDATED */}
-      <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16 bg-cream">
+      <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16 bg-gray-300">
         <div className="flex-1 lg:pr-8 text-center lg:text-left mb-8 lg:mb-0">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy mb-4 leading-tight">
             Where every page begins a journey...
@@ -263,18 +279,21 @@ const HomePage = () => {
           </p>
           <button
             className="bg-navy text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 mb-8 transition-colors duration-300"
-            onClick={() => navigate("/collections/fiction")}
+            onClick={() => navigate("/categories")}
           >
             Get a book →
           </button>
 
           <div className="flex items-center justify-center lg:justify-start gap-4">
+            {/* UPDATED: User profile images instead of empty circles */}
             <div className="flex -space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div
+              {userProfiles.map((profile, i) => (
+                <img
                   key={i}
-                  className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-300 rounded-full border-2 border-white"
-                ></div>
+                  src={profile}
+                  alt={`Happy customer ${i + 1}`}
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
+                />
               ))}
             </div>
             <div>
@@ -333,7 +352,7 @@ const HomePage = () => {
 
                   {/* View Details Button - Now clickable */}
                   <button
-                    className="flex items-center bg-navy text-gray-600 py-2 rounded-lg font-medium hover:bg-opacity-90 hover:underline transition-colors duration-300 text-sm sm:text-base"
+                    className="flex items-center bg-navy text-white py-2 px-4 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base"
                     onClick={() => navigate(`/products/${currentFeatured._id}`)}
                   >
                     <Eye className="mr-2" size={15}></Eye>
@@ -412,7 +431,7 @@ const HomePage = () => {
               />
               <p className="text-sm font-medium text-gray-800">{cat.name}</p>
               <p className="text-gray-500 text-xs mt-1">
-                {booksByCategory[cat.name]?.length || 0} books
+                {booksByCategory[cat.name]?.pagination.totalBooks || 0} books
               </p>
             </div>
           ))}
@@ -519,55 +538,100 @@ const HomePage = () => {
         )}
       </section>
 
-      {/* Quote Section - Responsive */}
-      <section className="bg-black text-white px-4 sm:px-6 lg:px-8 py-8 md:py-12 my-8 md:my-12 rounded-2xl mx-4 sm:mx-6 lg:mx-8">
-        <div className="max-w-4xl mx-auto">
+      {/* Quote Section - UPDATED with background image */}
+      <section
+        className="relative text-white px-4 sm:px-6 lg:px-8 py-8 md:py-12 my-8 md:my-12 rounded-2xl mx-4 sm:mx-6 lg:mx-8 overflow-hidden"
+        style={{
+          backgroundImage: `url('${quoteBackground}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl"></div>
+
+        <div className="relative z-10 max-w-4xl mx-auto">
           <p className="text-xl sm:text-2xl md:text-3xl font-bold italic text-center mb-4 leading-relaxed">
             "I do believe something very magical can happen when you read a
             book."
           </p>
-          <p className="text-center text-gray-400 text-sm sm:text-base">
+          <p className="text-center text-gray-200 text-sm sm:text-base">
             — J.K. Rowling
           </p>
         </div>
       </section>
 
-      {/* Promo Boxes - Responsive */}
+      {/* Promo Boxes - UPDATED with background images */}
       <section className="px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          <div className="bg-teal-600 rounded-2xl p-6 sm:p-8 text-white">
-            <h3 className="text-lg sm:text-xl font-bold mb-2">
-              New Publications
-            </h3>
-            <p className="text-sm mb-4">Discover the latest releases</p>
-            <button
-              onClick={() => navigate("/categories")}
-              className="text-white underline text-sm font-medium hover:no-underline"
-            >
-              Show more →
-            </button>
+          {/* New Publications */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.newPublications}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-teal-600 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">
+                New Publications
+              </h3>
+              <p className="text-sm mb-4">Discover the latest releases</p>
+              <button
+                onClick={() => navigate("/categories")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Show more →
+              </button>
+            </div>
           </div>
-          <div className="bg-blue-900 rounded-2xl p-6 sm:p-8 text-white">
-            <h3 className="text-lg sm:text-xl font-bold mb-2">
-              Sale on History books
-            </h3>
-            <p className="text-sm mb-4">Enjoy special discounts</p>
-            <button
-              onClick={() => navigate("/collections/history")}
-              className="text-white underline text-sm font-medium hover:no-underline"
-            >
-              Shop now →
-            </button>
+
+          {/* Sale on History books */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.historySale}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-blue-900 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">
+                Sale on History books
+              </h3>
+              <p className="text-sm mb-4">Enjoy special discounts</p>
+              <button
+                onClick={() => navigate("/collections/history")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Shop now →
+              </button>
+            </div>
           </div>
-          <div className="bg-red-400 rounded-2xl p-6 sm:p-8 text-white">
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Top Rated</h3>
-            <p className="text-sm mb-4">Best sellers this week</p>
-            <button
-              onClick={() => navigate("/categories")}
-              className="text-white underline text-sm font-medium hover:no-underline"
-            >
-              Browse →
-            </button>
+
+          {/* Top Rated */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.topRated}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-red-400 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">Top Rated</h3>
+              <p className="text-sm mb-4">Best sellers this week</p>
+              <button
+                onClick={() => navigate("/categories")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Browse →
+              </button>
+            </div>
           </div>
         </div>
       </section>

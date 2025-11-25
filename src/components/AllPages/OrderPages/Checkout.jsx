@@ -114,7 +114,7 @@ const Checkout = () => {
         throw new Error(orderData.message || "Failed to create payment order");
       }
 
-      console.log("Order created:", orderData);
+      // console.log("Order created:", orderData);
 
       // Step 2: Configure Razorpay options
       const options = {
