@@ -1,5 +1,5 @@
 // src/pages/Contact.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Contact = () => {
@@ -13,6 +13,10 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
 
   const handleChange = (e) => {
     setFormData({
