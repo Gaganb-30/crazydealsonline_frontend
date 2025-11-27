@@ -17,6 +17,7 @@ import {
   Plus,
   Upload,
   LayoutDashboard,
+  Menu,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +28,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Profile states
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -363,51 +365,130 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <div className="flex items-center space-x-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            {/* Left Section - Mobile Menu and Title */}
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                My Profile
+              </h1>
+            </div>
+
+            {/* Right Section - Admin Buttons and Logout */}
+            <div className="flex items-center space-x-2 sm:space-x-3">
               {/* Admin Buttons - Only shown for admin users */}
               {isAdmin && (
-                <div className="flex items-center space-x-2 mr-4">
+                <div className="hidden md:flex items-center space-x-2 mr-2">
                   <button
                     onClick={handleBulkAdd}
-                    className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex items-center bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
                   >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Bulk Upload
+                    <Upload className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Bulk Upload</span>
                   </button>
                   <button
                     onClick={handleSingleAdd}
-                    className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Single Upload
+                    <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Single Upload</span>
                   </button>
                   <button
                     onClick={handleDashboard}
-                    className="flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    className="flex items-center bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
                   >
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
+                    <LayoutDashboard className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Dashboard</span>
                   </button>
                 </div>
               )}
               <button
                 onClick={handleLogout}
-                className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
+                className="flex items-center text-gray-600 hover:text-red-600 transition-colors p-2"
+                title="Logout"
               >
-                <LogOut className="h-5 w-5 mr-2" />
-                Logout
+                <LogOut className="h-5 w-5" />
+                <span className="hidden sm:inline ml-2">Logout</span>
               </button>
             </div>
           </div>
+
+          {/* Mobile Admin Buttons */}
+          {isAdmin && (
+            <div className="md:hidden pb-3">
+              <div className="flex space-x-2 overflow-x-auto">
+                <button
+                  onClick={handleBulkAdd}
+                  className="flex items-center bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors whitespace-nowrap flex-shrink-0 text-sm"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Bulk Upload
+                </button>
+                <button
+                  onClick={handleSingleAdd}
+                  className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0 text-sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Single Upload
+                </button>
+                <button
+                  onClick={handleDashboard}
+                  className="flex items-center bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors whitespace-nowrap flex-shrink-0 text-sm"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow mb-8">
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { id: "profile", name: "Profile", icon: User },
+                { id: "address", name: "Address", icon: MapPin },
+                { id: "password", name: "Password", icon: Lock },
+                { id: "orders", name: "My Orders", icon: ShoppingBag },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setMobileMenuOpen(false);
+                      if (tab.id === "orders") fetchOrders();
+                    }}
+                    className={`flex items-center justify-center p-3 rounded-lg font-medium text-sm ${
+                      activeTab === tab.id
+                        ? "bg-blue-50 text-blue-600 border border-blue-200"
+                        : "text-gray-600 hover:bg-gray-50 border border-gray-200"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    {tab.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {/* Tabs - Desktop */}
+        <div className="bg-white rounded-lg shadow mb-6 hidden lg:block">
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               {[
@@ -439,6 +520,17 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Mobile Tab Indicator */}
+        <div className="lg:hidden bg-white rounded-lg shadow mb-6 p-4">
+          <p className="text-sm text-gray-600">Current Section:</p>
+          <p className="font-semibold text-gray-900">
+            {activeTab === "profile" && "Personal Information"}
+            {activeTab === "address" && "Shipping Address"}
+            {activeTab === "password" && "Change Password"}
+            {activeTab === "orders" && "My Orders"}
+          </p>
+        </div>
+
         {/* Message Alert */}
         {message.text && (
           <div
@@ -454,15 +546,15 @@ const Profile = () => {
 
         {/* Profile Tab */}
         {activeTab === "profile" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Personal Information
               </h2>
               {!isEditingProfile ? (
                 <button
                   onClick={() => setIsEditingProfile(true)}
-                  className="flex items-center text-blue-600 hover:text-blue-700"
+                  className="flex items-center text-blue-600 hover:text-blue-700 text-sm sm:text-base"
                 >
                   <Edit2 className="h-4 w-4 mr-1" />
                   Edit
@@ -470,7 +562,7 @@ const Profile = () => {
               ) : (
                 <button
                   onClick={() => setIsEditingProfile(false)}
-                  className="flex items-center text-gray-600 hover:text-gray-700"
+                  className="flex items-center text-gray-600 hover:text-gray-700 text-sm sm:text-base"
                 >
                   <X className="h-4 w-4 mr-1" />
                   Cancel
@@ -479,26 +571,30 @@ const Profile = () => {
             </div>
 
             {!isEditingProfile ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
                 <div className="flex items-center">
                   <User className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm text-gray-500">Full Name</p>
-                    <p className="font-medium">{user.name || "Not provided"}</p>
+                    <p className="font-medium text-sm sm:text-base">
+                      {user.name || "Not provided"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm text-gray-500">Email Address</p>
-                    <p className="font-medium">{user.email}</p>
+                    <p className="font-medium text-sm sm:text-base">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm text-gray-500">Phone Number</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-sm sm:text-base">
                       {user.phone || "Not provided"}
                     </p>
                   </div>
@@ -508,7 +604,9 @@ const Profile = () => {
                     <Phone className="h-5 w-5 text-gray-400 mr-3" />
                     <div>
                       <p className="text-sm text-gray-500">Alternate Phone</p>
-                      <p className="font-medium">{user.optionalPhone}</p>
+                      <p className="font-medium text-sm sm:text-base">
+                        {user.optionalPhone}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -516,7 +614,7 @@ const Profile = () => {
                   <Shield className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm text-gray-500">Account Type</p>
-                    <p className="font-medium capitalize">
+                    <p className="font-medium text-sm sm:text-base capitalize">
                       {user.role?.toLowerCase()}
                     </p>
                   </div>
@@ -525,7 +623,7 @@ const Profile = () => {
                   <Calendar className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm text-gray-500">Member Since</p>
-                    <p className="font-medium">
+                    <p className="font-medium text-sm sm:text-base">
                       {user.createdAt
                         ? new Date(user.createdAt).toLocaleDateString()
                         : "N/A"}
@@ -535,7 +633,7 @@ const Profile = () => {
               </div>
             ) : (
               <form onSubmit={handleProfileUpdate} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Full Name *
@@ -550,7 +648,7 @@ const Profile = () => {
                           name: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -567,7 +665,7 @@ const Profile = () => {
                           phone: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -583,7 +681,7 @@ const Profile = () => {
                           optionalPhone: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                 </div>
@@ -591,14 +689,14 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => setIsEditingProfile(false)}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 text-sm"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm"
                   >
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? "Saving..." : "Save Changes"}
@@ -611,15 +709,15 @@ const Profile = () => {
 
         {/* Address Tab */}
         {activeTab === "address" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Shipping Address
               </h2>
               {!isEditingAddress ? (
                 <button
                   onClick={() => setIsEditingAddress(true)}
-                  className="flex items-center text-blue-600 hover:text-blue-700"
+                  className="flex items-center text-blue-600 hover:text-blue-700 text-sm sm:text-base"
                 >
                   <Edit2 className="h-4 w-4 mr-1" />
                   {isAddressComplete() ? "Edit" : "Add Address"}
@@ -627,7 +725,7 @@ const Profile = () => {
               ) : (
                 <button
                   onClick={() => setIsEditingAddress(false)}
-                  className="flex items-center text-gray-600 hover:text-gray-700"
+                  className="flex items-center text-gray-600 hover:text-gray-700 text-sm sm:text-base"
                 >
                   <X className="h-4 w-4 mr-1" />
                   Cancel
@@ -638,46 +736,58 @@ const Profile = () => {
             {!isEditingAddress ? (
               <div>
                 {isAddressComplete() ? (
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <div className="grid grid-cols-1 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">House/Flat No.</p>
-                        <p className="font-medium">{user.address.hNo}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.hNo}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Street</p>
-                        <p className="font-medium">{user.address.street}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.street}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">City</p>
-                        <p className="font-medium">{user.address.city}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.city}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">State</p>
-                        <p className="font-medium">{user.address.state}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.state}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">ZIP Code</p>
-                        <p className="font-medium">{user.address.zipCode}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.zipCode}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Country</p>
-                        <p className="font-medium">{user.address.country}</p>
+                        <p className="font-medium text-sm sm:text-base">
+                          {user.address.country}
+                        </p>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <MapPin className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <div className="text-center py-8 sm:py-12">
+                    <MapPin className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                       No Address Saved
                     </h3>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-gray-500 mb-4 text-sm sm:text-base">
                       Add your shipping address to make checkout faster
                     </p>
                     <button
                       onClick={() => setIsEditingAddress(true)}
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base"
                     >
                       Add Address
                     </button>
@@ -686,7 +796,7 @@ const Profile = () => {
               </div>
             ) : (
               <form onSubmit={handleAddressUpdate} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       House/Flat No. *
@@ -701,7 +811,7 @@ const Profile = () => {
                           hNo: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -718,7 +828,7 @@ const Profile = () => {
                           street: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -735,7 +845,7 @@ const Profile = () => {
                           city: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -752,7 +862,7 @@ const Profile = () => {
                           state: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -769,7 +879,7 @@ const Profile = () => {
                           zipCode: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                   <div>
@@ -785,7 +895,7 @@ const Profile = () => {
                           country: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     />
                   </div>
                 </div>
@@ -793,14 +903,14 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => setIsEditingAddress(false)}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 text-sm"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm"
                   >
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? "Saving..." : "Save Address"}
@@ -813,15 +923,12 @@ const Profile = () => {
 
         {/* Password Tab */}
         {activeTab === "password" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
               Change Password
             </h2>
 
-            <form
-              onSubmit={handlePasswordChange}
-              className="max-w-md space-y-4"
-            >
+            <form onSubmit={handlePasswordChange} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Current Password
@@ -837,7 +944,7 @@ const Profile = () => {
                         currentPassword: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 text-sm sm:text-base"
                   />
                   <button
                     type="button"
@@ -868,7 +975,7 @@ const Profile = () => {
                         newPassword: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 text-sm sm:text-base"
                   />
                   <button
                     type="button"
@@ -902,7 +1009,7 @@ const Profile = () => {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 text-sm sm:text-base"
                   />
                   <button
                     type="button"
@@ -921,7 +1028,7 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm sm:text-base"
               >
                 {saving ? "Changing Password..." : "Change Password"}
               </button>
@@ -931,8 +1038,10 @@ const Profile = () => {
 
         {/* Orders Tab */}
         {activeTab === "orders" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+              My Orders
+            </h2>
 
             {ordersLoading ? (
               <div className="text-center py-8">
@@ -948,7 +1057,7 @@ const Profile = () => {
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <p className="font-semibold">
+                        <p className="font-semibold text-sm sm:text-base">
                           Order #{order.orderNumber}
                         </p>
                         <p className="text-sm text-gray-500">
@@ -956,7 +1065,7 @@ const Profile = () => {
                         </p>
                       </div>
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
                           order.status === "delivered"
                             ? "bg-green-100 text-green-800"
                             : order.status === "cancelled"
@@ -981,17 +1090,17 @@ const Profile = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <ShoppingBag className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <div className="text-center py-8 sm:py-12">
+                <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No Orders Yet
                 </h3>
-                <p className="text-gray-500 mb-4">
+                <p className="text-gray-500 mb-4 text-sm sm:text-base">
                   You haven't placed any orders yet
                 </p>
                 <button
                   onClick={() => navigate("/categories")}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base"
                 >
                   Start Shopping
                 </button>
