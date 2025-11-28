@@ -110,13 +110,13 @@ const BookCategory = () => {
     }
 
     // Apply availability filter
-    if (availabilityFilter !== "all") {
-      if (availabilityFilter === "in-stock") {
-        result = result.filter((book) => book.stock > 0);
-      } else if (availabilityFilter === "out-of-stock") {
-        result = result.filter((book) => book.stock <= 0);
-      }
-    }
+    // if (availabilityFilter !== "all") {
+    //   if (availabilityFilter === "in-stock") {
+    //     result = result.filter((book) => book.stock > 0);
+    //   } else if (availabilityFilter === "out-of-stock") {
+    //     result = result.filter((book) => book.stock <= 0);
+    //   }
+    // }
 
     // Apply sorting
     result.sort((a, b) => {
@@ -200,9 +200,6 @@ const BookCategory = () => {
             }
             alt={book.images?.find((img) => img.isPrimary)?.alt || book.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.target.src = "/book-placeholder.png";
-            }}
           />
         </div>
         <div className="p-4">
@@ -251,9 +248,6 @@ const BookCategory = () => {
               }
               alt={book.images?.find((img) => img.isPrimary)?.alt || book.title}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = "/book-placeholder.png";
-              }}
             />
           </div>
           <div className="ml-4 flex-1">

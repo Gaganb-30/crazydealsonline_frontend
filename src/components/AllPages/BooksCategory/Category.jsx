@@ -97,6 +97,15 @@ const Category = () => {
     return descriptions[category] || `Discover our ${category} collection`;
   };
 
+  const handleSearchClick = () => {
+    // Navigate to home with state that will trigger search bar opening
+    navigate("/", {
+      state: {
+        openSearch: true,
+      },
+    });
+  };
+
   // Loading component
   if (loading) {
     return (
@@ -259,6 +268,7 @@ const Category = () => {
         )}
 
         {/* Search CTA */}
+        {/* Search CTA */}
         <div className="mt-12 text-center">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 max-w-2xl mx-auto">
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
@@ -268,7 +278,7 @@ const Category = () => {
               Use our search to find exactly what you're looking for
             </p>
             <button
-              onClick={() => navigate("/search")}
+              onClick={handleSearchClick} // Changed to use handleSearchClick
               className="bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors inline-flex items-center space-x-2"
             >
               <span>Search Books</span>
@@ -295,7 +305,7 @@ const Category = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center space-x-8 text-sm text-slate-600">
-              <span>© 2024 BookStore</span>
+              <span>© 2025 BookStore</span>
               <span>•</span>
               <button className="hover:text-slate-900 transition-colors">
                 Privacy

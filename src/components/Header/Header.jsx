@@ -13,7 +13,7 @@ import {
   UserPen,
   Building,
 } from "lucide-react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -23,15 +23,19 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [searchType, setSearchType] = useState("all"); // 'all', 'title', 'author', 'isbn'
+  const [showSearchOptions, setShowSearchOptions] = useState(false);
+
   const searchRef = useRef(null);
   const inputRef = useRef(null);
 
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
 
   // Debounced search function
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (searchQuery.trim()) {
+      if (searchQuery.trim() && isSearchActive) {
         performSearch(searchQuery);
       } else {
         setSearchResults([]);
@@ -40,7 +44,20 @@ const Header = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  }, [searchQuery, searchType]);
+
+  useEffect(() => {
+    if (location.state?.openSearch) {
+      setIsSearchActive(true);
+      // Clear the state so it doesn't trigger again on re-render
+      navigate(location.pathname, { replace: true, state: {} });
+
+      // Focus the input after a short delay
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [location.state, navigate, location.pathname]);
 
   // Close search when clicking outside
   useEffect(() => {
@@ -50,6 +67,7 @@ const Header = () => {
         setSearchQuery("");
         setSearchResults([]);
         setSearchError("");
+        setShowSearchOptions(false);
       }
     };
 
@@ -64,11 +82,16 @@ const Header = () => {
     setSearchError("");
 
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/books/search?q=${encodeURIComponent(query)}&limit=5`
-      );
+      let url = `${
+        import.meta.env.VITE_API_URL
+      }/api/books/search?q=${encodeURIComponent(query)}&limit=5`;
+
+      // Add search type parameter if not 'all'
+      if (searchType !== "all") {
+        url += `&searchType=${searchType}`;
+      }
+
+      const response = await fetch(url);
 
       // Check if response is JSON
       const contentType = response.headers.get("content-type");
@@ -102,6 +125,7 @@ const Header = () => {
 
   const handleSearchToggle = () => {
     setIsSearchActive(!isSearchActive);
+    setShowSearchOptions(false);
     if (!isSearchActive) {
       setTimeout(() => {
         inputRef.current?.focus();
@@ -116,7 +140,34 @@ const Header = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+      navigate(
+        `/search?q=${encodeURIComponent(searchQuery)}&type=${searchType}`
+      );
+      setIsSearchActive(false);
+      setSearchQuery("");
+      setSearchResults([]);
+      setShowSearchOptions(false);
+    }
+  };
+
+  const handleSearchOptionSelect = (type) => {
+    setSearchType(type);
+    setShowSearchOptions(false);
+    if (searchQuery.trim()) {
+      performSearch(searchQuery);
+    }
+  };
+
+  const getSearchTypeLabel = (type) => {
+    switch (type) {
+      case "title":
+        return "Title";
+      case "author":
+        return "Author";
+      case "isbn":
+        return "ISBN";
+      default:
+        return "All";
     }
   };
 
@@ -164,11 +215,11 @@ const Header = () => {
             </nav>
           )}
 
-          {/* Search Bar - Expands when active */}
+          {/* Search Bar - Expands when active - POSITION FIXED */}
           <div
             ref={searchRef}
             className={`flex items-center space-x-2 sm:space-x-4 ${
-              isSearchActive ? "flex-1" : "justify-end"
+              isSearchActive ? "flex-1 ml-4 lg:justify-center" : "justify-end"
             }`}
           >
             {/* Search Container */}
@@ -186,18 +237,42 @@ const Header = () => {
                   <input
                     ref={inputRef}
                     type="text"
-                    placeholder="Search books, authors..."
+                    placeholder="Search books, authors, ISBN..."
                     className={`w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
                       isSearchActive ? "opacity-100" : "opacity-0 w-0"
                     }`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    // Removed onFocus that was automatically showing options
                   />
+
+                  {/* Search Options Toggle Button - Only show when search is active */}
+                  {isSearchActive && (
+                    <button
+                      type="button"
+                      onClick={() => setShowSearchOptions(!showSearchOptions)}
+                      className="absolute inset-y-0 left-0 flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
+                        />
+                      </svg>
+                    </button>
+                  )}
 
                   <button
                     type="button"
                     onClick={handleSearchToggle}
-                    className={`absolute inset-y-0 left-0 flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 ${
+                    className={`absolute inset-y-0 right-0 flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 ${
                       isSearchActive
                         ? "text-gray-500 hover:text-gray-700"
                         : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
@@ -212,9 +287,57 @@ const Header = () => {
                 </div>
               </form>
 
-              {/* Live Search Results Dropdown */}
-              {isSearchActive && searchQuery && (
+              {/* Search Type Options - Only show when explicitly toggled */}
+              {isSearchActive && showSearchOptions && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 animate-slideIn">
+                  <div className="p-3 border-b border-gray-200">
+                    <p className="text-sm font-medium text-gray-700">
+                      Search by:
+                    </p>
+                  </div>
+                  <div className="p-2">
+                    {["all", "title", "author", "isbn"].map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => handleSearchOptionSelect(type)}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm mb-1 last:mb-0 ${
+                          searchType === type
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            : "hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="font-medium">
+                          By {getSearchTypeLabel(type)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {type === "all" && "Search in all fields"}
+                          {type === "title" && "Search in book titles"}
+                          {type === "author" && "Search by author name"}
+                          {type === "isbn" && "Search by ISBN number"}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Live Search Results Dropdown - Show results when typing, not options */}
+              {isSearchActive && searchQuery && !showSearchOptions && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 max-h-96 overflow-y-auto z-50 animate-slideIn">
+                  {/* Current Search Type Indicator */}
+                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                    <span className="text-xs text-gray-600">
+                      Searching by:{" "}
+                      <strong>{getSearchTypeLabel(searchType)}</strong>
+                    </span>
+                    <button
+                      onClick={() => setShowSearchOptions(true)}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      Change
+                    </button>
+                  </div>
+
                   {isLoading ? (
                     <div className="p-4 text-center text-gray-500">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
@@ -237,6 +360,11 @@ const Header = () => {
                           key={book._id || book.id}
                           href={`/products/${book._id || book.id}`}
                           className="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                          onClick={() => {
+                            setIsSearchActive(false);
+                            setSearchQuery("");
+                            setSearchResults([]);
+                          }}
                         >
                           <img
                             src={
@@ -255,9 +383,14 @@ const Header = () => {
                             <p className="text-sm text-gray-600 truncate">
                               by {book.author}
                             </p>
+                            {book.details?.isbn && searchType === "isbn" && (
+                              <p className="text-xs text-gray-500 truncate">
+                                ISBN: {book.details.isbn}
+                              </p>
+                            )}
                             <div className="flex items-center justify-between mt-1">
                               <span className="text-sm font-semibold text-blue-600">
-                                ${book.price}
+                                ₹{book.price}
                               </span>
                               <span className="text-xs text-gray-500 capitalize">
                                 {book.format}
@@ -268,8 +401,15 @@ const Header = () => {
                       ))}
                       <div className="px-4 py-3 border-t border-gray-200">
                         <a
-                          href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                          href={`/search?q=${encodeURIComponent(
+                            searchQuery
+                          )}&type=${searchType}`}
                           className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center block"
+                          onClick={() => {
+                            setIsSearchActive(false);
+                            setSearchQuery("");
+                            setSearchResults([]);
+                          }}
                         >
                           View all results
                         </a>
@@ -278,6 +418,15 @@ const Header = () => {
                   ) : searchQuery && !isLoading ? (
                     <div className="p-4 text-center text-gray-500">
                       <p>No books found for "{searchQuery}"</p>
+                      <p className="text-sm mt-1">
+                        Try changing your search type
+                      </p>
+                      <button
+                        onClick={() => setShowSearchOptions(true)}
+                        className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
+                      >
+                        Change search type
+                      </button>
                     </div>
                   ) : null}
                 </div>
@@ -338,7 +487,7 @@ const Header = () => {
         )}
       </div>
       {/* Overlay for search results */}
-      {isSearchActive && searchQuery && (
+      {isSearchActive && (searchQuery || showSearchOptions) && (
         <div
           className="fixed inset-0 bg-black bg-opacity-10 z-40 mt-16"
           onClick={() => {
@@ -346,6 +495,7 @@ const Header = () => {
             setSearchQuery("");
             setSearchResults([]);
             setSearchError("");
+            setShowSearchOptions(false);
           }}
         />
       )}
