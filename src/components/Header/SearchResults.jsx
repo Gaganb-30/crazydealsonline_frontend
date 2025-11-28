@@ -294,9 +294,6 @@ const SearchResults = () => {
             src={book.images?.[0]?.url || "/book-placeholder.png"}
             alt={book.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.target.src = "/book-placeholder.png";
-            }}
           />
         </div>
         <div className="p-4">
