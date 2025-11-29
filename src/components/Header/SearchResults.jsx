@@ -28,7 +28,7 @@ const SearchResults = () => {
   const [sortBy, setSortBy] = useState("relevance");
   const [searchType, setSearchType] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [priceRange, setPriceRange] = useState([0, 99999999]);
   const [formatFilter, setFormatFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
 
@@ -222,7 +222,7 @@ const SearchResults = () => {
       books.length > 0
         ? Math.max(...books.map((book) => book.price || 0))
         : 5000;
-    setPriceRange([0, Math.max(5000, maxPrice)]);
+    setPriceRange([0, Math.min(99999999, maxPrice)]);
     setFormatFilter("all");
     setAvailabilityFilter("all");
     setSortBy("relevance");
@@ -234,7 +234,8 @@ const SearchResults = () => {
       books.length > 0
         ? Math.max(...books.map((book) => book.price || 0))
         : 5000;
-    if (priceRange[0] > 0 || priceRange[1] < Math.max(5000, maxPrice)) count++;
+    if (priceRange[0] > 0 || priceRange[1] < Math.min(99999999, maxPrice))
+      count++;
     if (formatFilter !== "all") count++;
     if (availabilityFilter !== "all") count++;
     if (sortBy !== "relevance") count++;
@@ -267,21 +268,21 @@ const SearchResults = () => {
     }
   };
 
-  const renderStars = (rating) => {
-    return (
-      <div className="flex items-center">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-3 w-3 ${
-              star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
-            }`}
-          />
-        ))}
-        <span className="ml-1 text-sm text-gray-600">({rating})</span>
-      </div>
-    );
-  };
+  // const renderStars = (rating) => {
+  //   return (
+  //     <div className="flex items-center">
+  //       {[1, 2, 3, 4, 5].map((star) => (
+  //         <Star
+  //           key={star}
+  //           className={`h-3 w-3 ${
+  //             star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+  //           }`}
+  //         />
+  //       ))}
+  //       <span className="ml-1 text-sm text-gray-600">({rating})</span>
+  //     </div>
+  //   );
+  // };
 
   const renderBookCard = (book) => (
     <div
@@ -370,11 +371,11 @@ const SearchResults = () => {
               <span className="text-sm text-gray-500 mr-3">
                 {book.category}
               </span>
-              {book.ratings && (
+              {/* {book.ratings && (
                 <div className="flex items-center">
                   {renderStars(book.ratings.average || 0)}
                 </div>
-              )}
+              )} */}
             </div>
 
             <p className="text-gray-700 text-sm line-clamp-2 mb-3">
@@ -485,7 +486,7 @@ const SearchResults = () => {
   const FilterSidebar = () => {
     const maxPrice =
       books.length > 0
-        ? Math.min(...books.map((book) => book.price || 0))
+        ? Math.max(...books.map((book) => book.price || 0))
         : 99999999;
 
     return (

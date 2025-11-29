@@ -22,7 +22,7 @@ const BookCategory = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [priceRange, setPriceRange] = useState([0, 99999999]);
   const [formatFilter, setFormatFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ const BookCategory = () => {
             const maxBookPrice = Math.max(
               ...allBooks.map((book) => book.price || 0)
             );
-            setPriceRange([0, Math.max(5000, maxBookPrice)]);
+            setPriceRange([0, Math.min(99999999, maxBookPrice)]);
           }
         } else {
           setError(`Failed to load ${categoryName.toLowerCase()} books`);
@@ -168,7 +168,7 @@ const BookCategory = () => {
       books.length > 0
         ? Math.max(...books.map((book) => book.price || 0))
         : 5000;
-    setPriceRange([0, Math.max(5000, maxPrice)]);
+    setPriceRange([0, Math.min(99999999, maxPrice)]);
     setFormatFilter("all");
     setAvailabilityFilter("all");
     setSortBy("relevance");
@@ -180,7 +180,8 @@ const BookCategory = () => {
       books.length > 0
         ? Math.max(...books.map((book) => book.price || 0))
         : 5000;
-    if (priceRange[0] > 0 || priceRange[1] < Math.max(5000, maxPrice)) count++;
+    if (priceRange[0] > 0 || priceRange[1] < Math.min(99999999, maxPrice))
+      count++;
     if (formatFilter !== "all") count++;
     if (availabilityFilter !== "all") count++;
     if (sortBy !== "relevance") count++;
