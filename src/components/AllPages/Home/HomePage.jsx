@@ -268,7 +268,7 @@ const HomePage = () => {
   return (
     <div className="w-full bg-cream overflow-x-hidden">
       {/* Hero Section - UPDATED */}
-      <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16 bg-gray-300">
+      <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-8 bg-gray-300">
         <div className="flex-1 lg:pr-8 text-center lg:text-left mb-8 lg:mb-0">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy mb-4 leading-tight">
             Where every page begins a journey...
@@ -352,7 +352,7 @@ const HomePage = () => {
 
                   {/* View Details Button - Now clickable */}
                   <button
-                    className="flex items-center bg-navy text-white py-2 px-4 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base"
+                    className="flex items-center bg-navy text-gray-800 underline py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base"
                     onClick={() => navigate(`/products/${currentFeatured._id}`)}
                   >
                     <Eye className="mr-2" size={15}></Eye>
