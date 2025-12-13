@@ -766,7 +766,7 @@ const BookCategory = () => {
             )}
 
             {/* Newsletter Section */}
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center mt-16">
+            {/* <div className="bg-white rounded-lg border border-gray-200 p-8 text-center mt-16">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Love {categoryName} Books?
               </h2>
@@ -785,7 +785,7 @@ const BookCategory = () => {
                   Subscribe Now
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
