@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -7,155 +7,230 @@ import {
   ChevronLeft,
   ChevronRight,
   Star,
-  Eye,
-  Sparkles,
-  TrendingUp,
-  BookOpen,
   Clock,
-  Award,
-  Filter,
-  ChevronDown,
-  Zap,
+  Eye,
 } from "lucide-react";
 
 const HomePage = () => {
   const [booksByCategory, setBooksByCategory] = useState({});
   const [latestBooks, setLatestBooks] = useState([]);
-  const [featuredBooks, setFeaturedBooks] = useState([]);
   const [hindiBooks, setHindiBooks] = useState([]);
   const [englishBooks, setEnglishBooks] = useState([]);
-  const [trendingBooks, setTrendingBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [featuredBooks, setFeaturedBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [booksLoading, setBooksLoading] = useState(true);
+  const [featuredBooksLoading, setFeaturedBooksLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [currentFeaturedBook, setCurrentFeaturedBook] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("All");
   const navigate = useNavigate();
-  const booksRef = useRef(null);
 
-  // Categories with better styling
+  // User profile images for the circles
+  const userProfiles = [
+    "https://i.postimg.cc/Y0rnSt6q/Chat-GPT-Image-Nov-25-2025-10-50-27-AM.png",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80",
+    "https://i.postimg.cc/Y0dXGTRH/Chat-GPT-Image-Nov-25-2025-10-51-00-AM.png",
+  ];
+
+  // Background images for promo boxes
+  const promoBackgrounds = {
+    newPublications:
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    historySale:
+      "https://images.stockcake.com/public/5/b/1/5b16cd96-8b6f-4e5f-a38a-7d8dbd520b8f_large/ancient-opened-book-stockcake.jpg",
+    topRated:
+      "https://m.media-amazon.com/images/S/aplus-media/sc/2ce7adda-89e2-4bb9-ba9c-da55e052226e.__CR367,0,2229,1672_PT0_SX800_V1___.jpg",
+  };
+
+  // Quote section background
+  const quoteBackground =
+    "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80";
+
+  // Categories to display with their routes and images
   const categories = [
-    { name: "All", color: "bg-blue-100 text-blue-800", icon: "📚" },
-    { name: "Biography", color: "bg-purple-100 text-purple-800", icon: "👤" },
-    { name: "Military", color: "bg-green-100 text-green-800", icon: "🛡️" },
-    { name: "History", color: "bg-yellow-100 text-yellow-800", icon: "📜" },
-    { name: "Self-help", color: "bg-pink-100 text-pink-800", icon: "💪" },
-    { name: "Religious", color: "bg-indigo-100 text-indigo-800", icon: "🙏" },
-    { name: "Hindi", color: "bg-orange-100 text-orange-800", icon: "🇮🇳" },
-    { name: "English", color: "bg-red-100 text-red-800", icon: "🇺🇸" },
+    {
+      name: "Biography",
+      route: "/collections/biography",
+      image: "https://i.postimg.cc/HLvRsJ6m/Fiction.png",
+      color: "bg-purple-200",
+    },
+    {
+      name: "Military & Defence",
+      route: "/collections/science",
+      image:
+        "https://i.postimg.cc/85F3F109/groovy-back-to-school-clipart-science-book-illustration-in-trendy-retro-y2k-style-png.png",
+      color: "bg-blue-200",
+    },
+    {
+      name: "History",
+      route: "/collections/history",
+      image: "https://i.postimg.cc/nzs5sHP6/history.png",
+      color: "bg-yellow-100",
+    },
+    {
+      name: "Self-Help",
+      route: "/collections/self-help",
+      image:
+        "https://i.postimg.cc/PxLcLtR0/pngtree-ancient-vintage-mystery-book-with-ornate-details-png-image-14657244.png",
+      color: "bg-pink-200",
+    },
+    {
+      name: "Religious",
+      route: "/collections/religious",
+      image: "https://i.postimg.cc/9M4S4Wk0/romance.png",
+      color: "bg-pink-100",
+    },
   ];
 
-  // Top stats
-  const stats = [
-    { label: "Books", value: "10K+", sub: "Available" },
-    { label: "Readers", value: "50K+", sub: "Active" },
-    { label: "Ratings", value: "4.8★", sub: "Avg Rating" },
-    { label: "Delivered", value: "25K+", sub: "Orders" },
-  ];
-
-  // Featured authors
-  const featuredAuthors = [
-    { name: "J.K. Rowling", books: 7, rating: 4.9 },
-    { name: "Stephen King", books: 65, rating: 4.7 },
-    { name: "Amish Tripathi", books: 8, rating: 4.8 },
-  ];
-
-  // Fetch all books data
-  const fetchAllBooks = async () => {
+  // Fetch latest books
+  const fetchLatestBooks = async () => {
     try {
-      setLoading(true);
-
-      // Fetch latest books
-      const latestRes = await fetch(
+      setBooksLoading(true);
+      const response = await fetch(
         `${
           import.meta.env.VITE_API_URL
-        }/api/books?page=1&limit=12&sort=createdAt&order=desc`
+        }/api/books?page=1&limit=18&sort=createdAt&order=desc`
       );
-      const latestData = await latestRes.json();
-      if (latestData.success) {
-        setLatestBooks(latestData.data.books || []);
+      const data = await response.json();
+
+      if (data.success) {
+        setLatestBooks(data.data.books || []);
+      } else {
+        throw new Error(data.message || "Failed to fetch latest books");
       }
-
-      // Fetch featured books
-      const featuredRes = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/books/featured/books?limit=6`
-      );
-      const featuredData = await featuredRes.json();
-      if (featuredData.success) {
-        setFeaturedBooks(featuredData.data.books || []);
-      }
-
-      // Fetch trending books
-      const trendingRes = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/books?page=1&limit=8&sort=views&order=desc`
-      );
-      const trendingData = await trendingRes.json();
-      if (trendingData.success) {
-        setTrendingBooks(trendingData.data.books || []);
-      }
-
-      // Fetch Hindi books (assuming language filter)
-      const hindiRes = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/books?language=Hindi&limit=8`
-      );
-      const hindiData = await hindiRes.json();
-      if (hindiData.success) {
-        setHindiBooks(hindiData.data.books || []);
-      }
-
-      // Fetch English books
-      const englishRes = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/books?language=English&limit=8`
-      );
-      const englishData = await englishRes.json();
-      if (englishData.success) {
-        setEnglishBooks(englishData.data.books || []);
-      }
-
-      // Fetch books by category
-      const categoryPromises = categories.map(async (cat) => {
-        if (
-          cat.name !== "All" &&
-          cat.name !== "Hindi" &&
-          cat.name !== "English"
-        ) {
-          try {
-            const response = await fetch(
-              `${import.meta.env.VITE_API_URL}/api/books/category/${
-                cat.name
-              }?page=1&limit=4`
-            );
-            const data = await response.json();
-            if (data.success) {
-              return { [cat.name]: data.data };
-            }
-          } catch (err) {
-            console.error(`Error fetching ${cat.name} books:`, err);
-          }
-        }
-        return null;
-      });
-
-      const categoryResults = await Promise.all(categoryPromises);
-      const categoryBooks = {};
-      categoryResults.forEach((result) => {
-        if (result) {
-          Object.assign(categoryBooks, result);
-        }
-      });
-      setBooksByCategory(categoryBooks);
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Failed to load books. Please try again.");
+      console.error("Error fetching latest books:", err);
+      setError("Failed to load latest books");
     } finally {
-      setLoading(false);
+      setBooksLoading(false);
     }
   };
 
+  // Fetch latest hindi books
+  const fetchHindiBooks = async () => {
+    try {
+      setBooksLoading(true);
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/books?page=2&limit=18&sort=createdAt&order=desc`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setHindiBooks(data.data.books || []);
+      } else {
+        throw new Error(data.message || "Failed to fetch latest hindibooks");
+      }
+    } catch (err) {
+      console.error("Error fetching latest hindi books:", err);
+      setError("Failed to load latest books");
+    } finally {
+      setBooksLoading(false);
+    }
+  };
+
+  // Fetch English books
+  const fetchEnglishBooks = async () => {
+    try {
+      setBooksLoading(true);
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/books?page=3&limit=18&sort=createdAt&order=desc`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setEnglishBooks(data.data.books || []);
+      } else {
+        throw new Error(data.message || "Failed to fetch latest englishbooks");
+      }
+    } catch (err) {
+      console.error("Error fetching latest english books:", err);
+      setError("Failed to load latest books");
+    } finally {
+      setBooksLoading(false);
+    }
+  };
+
+  // Fetch featured books using dedicated endpoint
+  const fetchFeaturedBooks = async () => {
+    try {
+      setFeaturedBooksLoading(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/books/featured/books?limit=10`
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFeaturedBooks(data.data.books || []);
+      } else {
+        console.warn(
+          "Featured books endpoint failed, using latest books as fallback"
+        );
+        if (latestBooks.length > 0) {
+          setFeaturedBooks(latestBooks.slice(0, 10));
+        } else {
+          throw new Error("No books available");
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching featured books:", err);
+      if (latestBooks.length > 0) {
+        setFeaturedBooks(latestBooks.slice(0, 10));
+      }
+    } finally {
+      setFeaturedBooksLoading(false);
+    }
+  };
+
+  // Fetch books for each category
   useEffect(() => {
-    fetchAllBooks();
+    const fetchBooksByCategory = async () => {
+      try {
+        setLoading(true);
+        const categoryBooks = {};
+
+        for (const category of categories) {
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_API_URL}/api/books/category/${
+                category.name
+              }?page=1&limit=8`
+            );
+            const data = await response.json();
+
+            if (data.success) {
+              categoryBooks[category.name] = data.data;
+            }
+          } catch (err) {
+            console.error(`Error fetching ${category.name} books:`, err);
+          }
+        }
+
+        setBooksByCategory(categoryBooks);
+      } catch (err) {
+        setError("Failed to load books");
+        console.error("Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooksByCategory();
+    fetchLatestBooks();
+    fetchHindiBooks();
+    fetchEnglishBooks();
   }, []);
+
+  // Fetch featured books when latest books are loaded
+  useEffect(() => {
+    if (!loading) {
+      fetchFeaturedBooks();
+    }
+  }, [loading]);
 
   // Auto-rotate featured books
   useEffect(() => {
@@ -165,13 +240,53 @@ const HomePage = () => {
           prev === featuredBooks.length - 1 ? 0 : prev + 1
         );
       }, 5000);
+
       return () => clearInterval(interval);
     }
   }, [featuredBooks.length]);
 
-  // Scroll to books section
-  const scrollToBooks = () => {
-    booksRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Slider navigation for latest books
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % 3);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + 3) % 3);
+  };
+
+  // Featured book navigation
+  const nextFeaturedBook = () => {
+    setCurrentFeaturedBook((prev) =>
+      prev === featuredBooks.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevFeaturedBook = () => {
+    setCurrentFeaturedBook((prev) =>
+      prev === 0 ? featuredBooks.length - 1 : prev - 1
+    );
+  };
+
+  // Get current slide books
+  const getCurrentSlideBooks = () => {
+    const startIndex = currentSlide * 6;
+    const endIndex = startIndex + 6;
+    return latestBooks.slice(startIndex, endIndex);
+  };
+  const getHindiSlideBooks = () => {
+    const startIndex = currentSlide * 6;
+    const endIndex = startIndex + 6;
+    return hindiBooks.slice(startIndex, endIndex);
+  };
+  const getEnglishSlideBooks = () => {
+    const startIndex = currentSlide * 6;
+    const endIndex = startIndex + 6;
+    return englishBooks.slice(startIndex, endIndex);
+  };
+
+  // Get current featured book
+  const getCurrentFeaturedBook = () => {
+    return featuredBooks[currentFeaturedBook];
   };
 
   // Get book image URL
@@ -179,561 +294,628 @@ const HomePage = () => {
     return (
       book.images?.find((img) => img.isPrimary)?.url ||
       book.images?.[0]?.url ||
-      "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&auto=format&fit=crop"
+      "/book-placeholder.jpg"
     );
   };
 
-  // Get books based on active category
-  const getFilteredBooks = () => {
-    switch (activeCategory) {
-      case "Hindi":
-        return hindiBooks;
-      case "English":
-        return englishBooks;
-      case "All":
-        return latestBooks;
-      default:
-        return booksByCategory[activeCategory]?.books || [];
-    }
-  };
-
-  // Loading state
-  if (loading && !latestBooks.length) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="w-full bg-cream min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
-          <p className="mt-4 text-gray-600 font-medium">
-            Loading amazing books...
-          </p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-navy mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading amazing books...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section with Books Immediately Visible */}
-      <div className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
-
-        <div className="container mx-auto px-4 py-6 md:py-8 relative z-10">
-          {/* Header with Stats */}
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <div className="mb-6 md:mb-0">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-                Discover Your Next{" "}
-                <span className="text-blue-600">Favorite Read</span>
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Curated collection of amazing books
-              </p>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-gray-600">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="Search for books, authors, or topics..."
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none shadow-sm"
-              />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                Search
-              </button>
-            </div>
-          </div>
-
-          {/* Category Filter */}
-          <div className="mb-8" ref={booksRef}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                <Filter className="mr-2" size={20} />
-                Browse Categories
-              </h2>
-              <button
-                onClick={scrollToBooks}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
-              >
-                View All <ChevronDown className="ml-1" size={16} />
-              </button>
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((cat) => (
-                <button
-                  key={cat.name}
-                  onClick={() => setActiveCategory(cat.name)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    activeCategory === cat.name
-                      ? `${cat.color} shadow-md scale-105`
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <span className="mr-2">{cat.icon}</span>
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
+  if (error) {
+    return (
+      <div className="w-full bg-cream min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-600">
+          <p>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-navy text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90"
+          >
+            Try Again
+          </button>
         </div>
       </div>
+    );
+  }
 
-      {/* Main Books Grid - Immediately Visible */}
-      <div className="container mx-auto px-4 pb-8">
-        {/* Books Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {activeCategory === "All"
-                ? "Latest Books"
-                : `${activeCategory} Books`}
-            </h2>
-            <p className="text-gray-600">
-              {getFilteredBooks().length}+ amazing books to explore
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Zap size={20} className="text-gray-600" />
-            </button>
-            <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-              <option>Sort by: Newest</option>
-              <option>Sort by: Popular</option>
-              <option>Sort by: Price</option>
-            </select>
+  const currentFeatured = getCurrentFeaturedBook();
+
+  return (
+    <div className="w-full bg-cream overflow-x-hidden">
+      {/* Hero Section - UPDATED */}
+      <section className="flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-6 bg-gray-300">
+        <div className="flex-1 lg:pr-8 text-center lg:text-left mb-8 lg:mb-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-navy mb-4 leading-tight">
+            Where every page begins a journey...
+          </h1>
+          <p className="text-gray-600 mb-6 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0">
+            A huge collection of ebook books based on new curiosity, by search
+            answer, about your interest you want.
+          </p>
+          <button
+            className="bg-navy text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 mb-8 transition-colors duration-300"
+            onClick={() => navigate("/categories")}
+          >
+            Get a book →
+          </button>
+
+          <div className="flex items-center justify-center lg:justify-start gap-4">
+            {/* UPDATED: User profile images instead of empty circles */}
+            <div className="flex -space-x-2">
+              {userProfiles.map((profile, i) => (
+                <img
+                  key={i}
+                  src={profile}
+                  alt={`Happy customer ${i + 1}`}
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
+                />
+              ))}
+            </div>
+            <div>
+              <div className="font-bold text-navy text-sm sm:text-base">
+                10K+
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600">
+                Happy Customers
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Books Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-          {getFilteredBooks()
-            .slice(0, 12)
-            .map((book) => (
-              <div
-                key={book._id}
-                className="group bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 overflow-hidden cursor-pointer"
-                onClick={() => navigate(`/products/${book._id}`)}
-              >
-                {/* Book Cover */}
-                <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+        <div className="flex-1 relative w-full max-w-2xl">
+          {/* UPDATED: Book Display Container */}
+          <div className="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-3xl p-6 sm:p-8 relative z-10 min-h-64 sm:min-h-75 md:min-h-90 flex items-center justify-center">
+            {featuredBooksLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy"></div>
+              </div>
+            ) : currentFeatured ? (
+              <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full">
+                {/* Book Image - Properly displayed without cover/zoom */}
+                <div className="flex-shrink-0 w-32 h-40 sm:w-40 sm:h-52 md:w-48 md:h-60 bg-white rounded-lg shadow-lg p-2 flex items-center justify-center">
                   <img
-                    src={getBookImageUrl(book)}
-                    alt={book.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    src={getBookImageUrl(currentFeatured)}
+                    alt={currentFeatured.title}
+                    className="w-full h-full object-contain rounded"
                   />
-
-                  {/* Quick Actions */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/products/${book._id}`);
-                        }}
-                        className="bg-white text-gray-800 px-3 py-1.5 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors"
-                      >
-                        Quick View
-                      </button>
-                      <button
-                        onClick={(e) => e.stopPropagation()}
-                        className="bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-blue-700 transition-colors"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Badge */}
-                  {book.discount && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                      -{book.discount}%
-                    </div>
-                  )}
                 </div>
 
                 {/* Book Info */}
-                <div className="p-3">
-                  <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
-                    {book.title}
+                <div className="text-center md:text-left max-w-md">
+                  <h3 className="text-xl sm:text-2xl font-bold text-navy mb-2 line-clamp-2">
+                    {currentFeatured.title}
                   </h3>
-                  <p className="text-gray-600 text-xs mb-2 line-clamp-1">
-                    {book.author}
+                  <p className="text-gray-600 mb-2 text-sm sm:text-base">
+                    by {currentFeatured.author}
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
+                    {currentFeatured.about ||
+                      "Discover this amazing book from our collection."}
                   </p>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-base font-bold text-gray-900">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                    <p className="text-xl sm:text-2xl font-bold text-navy">
+                      ₹{currentFeatured.price?.toFixed(2) || ""}
+                    </p>
+                    {currentFeatured.originalPrice &&
+                      currentFeatured.originalPrice > currentFeatured.price && (
+                        <p className="text-sm text-gray-500 line-through">
+                          ₹{currentFeatured.originalPrice.toFixed(2)}
+                        </p>
+                      )}
+                  </div>
+
+                  {/* View Details Button - Now clickable */}
+                  <button
+                    className="flex items-center bg-navy text-gray-800 underline py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base"
+                    onClick={() => navigate(`/products/${currentFeatured._id}`)}
+                  >
+                    <Eye className="mr-2" size={15}></Eye>
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                <p>No featured books available</p>
+              </div>
+            )}
+          </div>
+
+          {/* UPDATED: Navigation Buttons - Fixed positioning */}
+          {featuredBooks.length > 1 && (
+            <div className="flex justify-between mt-4 z-20 relative">
+              <button
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-300 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors duration-300 shadow-lg"
+                onClick={prevFeaturedBook}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-300 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors duration-300 shadow-lg"
+                onClick={nextFeaturedBook}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+
+          {/* Progress Indicators */}
+          {featuredBooks.length > 1 && (
+            <div className="flex justify-center mt-4 space-x-2 z-10 relative">
+              {featuredBooks.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    currentFeaturedBook === index
+                      ? "bg-gray-600 w-4"
+                      : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentFeaturedBook(index)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Latest Books Slider */}
+      <section className="px-8 pt-8 pb-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-3xl font-bold text-navy">Latest Books</h2>
+          <div className="flex gap-3">
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={prevSlide}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={nextSlide}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+
+        {booksLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy"></div>
+          </div>
+        ) : latestBooks.length > 0 ? (
+          <div className="relative">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {getCurrentSlideBooks().map((book) => (
+                <div
+                  key={book._id}
+                  className="group bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 overflow-hidden cursor-pointer"
+                  onClick={() => navigate(`/products/${book._id}`)}
+                >
+                  {/* Book Cover */}
+                  <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                    <img
+                      src={getBookImageUrl(book)}
+                      alt={book.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+
+                    {/* Quick Actions */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products/${book._id}`);
+                          }}
+                          className="bg-white text-gray-800 px-3 py-1.5 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors"
+                        >
+                          Quick View
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products/${book._id}`);
+                          }}
+                          className="bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-blue-700 transition-colors"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Badge */}
+                    {book.discount && (
+                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                        -{book.discount}%
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Book Info */}
+                  <div className="p-3">
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
+                      {book.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs mb-2 line-clamp-1">
+                      {book.author}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-base font-bold text-gray-900">
+                          ₹{book.price}
+                        </span>
+                        {book.originalPrice &&
+                          book.originalPrice > book.price && (
+                            <span className="text-xs text-gray-500 line-through ml-2">
+                              ₹{book.originalPrice}
+                            </span>
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-8 space-x-2">
+              {[0, 1, 2].map((index) => (
+                <button
+                  key={index}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    currentSlide === index ? "bg-navy" : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No latest books available
+          </div>
+        )}
+      </section>
+
+      {/* Latest Hindi Slider */}
+      <section className="px-8 py-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-3xl font-bold text-navy">Hindi Books</h2>
+          <div className="flex gap-3">
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={prevSlide}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={nextSlide}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+
+        {booksLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy"></div>
+          </div>
+        ) : latestBooks.length > 0 ? (
+          <div className="relative">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {getHindiSlideBooks().map((book) => (
+                <div
+                  key={book._id}
+                  className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer flex flex-col h-full"
+                  onClick={() => navigate(`/products/${book._id}`)}
+                >
+                  <div className="relative aspect-[3/4] bg-gray-100 flex items-center justify-center p-4">
+                    <img
+                      src={getBookImageUrl(book)}
+                      alt={book.title}
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute top-2 right-2 bg-navy text-white bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-1 rounded-full text-xs font-semibold">
+                      {book.format || "Paperback"}
+                    </div>
+                  </div>
+
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 leading-tight">
+                      {book.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs mb-2 line-clamp-1">
+                      {book.author}
+                    </p>
+
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-lg font-bold text-gray-900">
                         ₹{book.price}
                       </span>
                       {book.originalPrice &&
                         book.originalPrice > book.price && (
-                          <span className="text-xs text-gray-500 line-through ml-2">
+                          <span className="text-sm text-gray-500 line-through">
                             ₹{book.originalPrice}
                           </span>
                         )}
                     </div>
-                    <div className="flex items-center text-xs text-gray-600">
-                      <Star
-                        className="text-yellow-500 fill-current mr-1"
-                        size={12}
-                      />
-                      {book.rating || "4.5"}
+
+                    <div className="mt-auto space-y-2">
+                      <button
+                        className="w-full border border-gray-300 text-gray-700 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/products/${book._id}`);
+                        }}
+                      >
+                        <Eye size={14} />
+                        View Details
+                      </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-        </div>
+              ))}
+            </div>
 
-        {/* Load More Button */}
-        {getFilteredBooks().length > 12 && (
-          <div className="text-center mt-8">
-            <button className="border-2 border-blue-600 text-blue-600 px-8 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-              Load More Books
-            </button>
+            <div className="flex justify-center mt-8 space-x-2">
+              {[0, 1, 2].map((index) => (
+                <button
+                  key={index}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    currentSlide === index ? "bg-navy" : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No latest books available
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Featured Books Slider */}
-      {featuredBooks.length > 0 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 py-8">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Sparkles className="text-blue-600" size={20} />
-                  <span className="text-sm font-medium text-blue-600 uppercase tracking-wider">
-                    Featured
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Editor's Choice
-                </h2>
-              </div>
-              <button
-                onClick={() => navigate("/featured")}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center"
-              >
-                View All <ChevronRight size={16} />
-              </button>
-            </div>
+      {/* Latest English Books Slider */}
+      <section className="px-8 py-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-3xl font-bold text-navy">English Books</h2>
+          <div className="flex gap-3">
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={prevSlide}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+              onClick={nextSlide}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
 
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                {featuredBooks[currentFeaturedBook] && (
-                  <div className="flex flex-col md:flex-row">
-                    {/* Book Image */}
-                    <div className="md:w-2/5 bg-gradient-to-br from-blue-100 to-indigo-100 p-8 flex items-center justify-center">
-                      <div className="w-48 h-64 md:w-56 md:h-72 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                        <img
-                          src={getBookImageUrl(
-                            featuredBooks[currentFeaturedBook]
-                          )}
-                          alt={featuredBooks[currentFeaturedBook].title}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Book Details */}
-                    <div className="md:w-3/5 p-8">
-                      <div className="flex items-center space-x-2 mb-4">
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                          {featuredBooks[currentFeaturedBook].category ||
-                            "Featured"}
-                        </span>
-                        <span className="flex items-center text-sm text-gray-600">
-                          <Clock className="mr-1" size={14} />
-                          320 pages
-                        </span>
-                      </div>
-
-                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                        {featuredBooks[currentFeaturedBook].title}
-                      </h3>
-
-                      <p className="text-gray-600 mb-6 line-clamp-3">
-                        {featuredBooks[currentFeaturedBook].about ||
-                          "An extraordinary book that has captured the hearts of readers worldwide."}
-                      </p>
-
-                      <div className="flex items-center mb-6">
-                        <div className="flex items-center mr-6">
-                          <Star
-                            className="text-yellow-500 fill-current"
-                            size={20}
-                          />
-                          <span className="ml-2 text-lg font-semibold">
-                            4.8
-                          </span>
-                          <span className="text-gray-500 text-sm ml-1">
-                            (1,234 reviews)
-                          </span>
-                        </div>
-                        <div className="flex items-center">
-                          <Eye className="text-gray-400 mr-1" size={18} />
-                          <span className="text-gray-600">2.5k reads</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-3xl font-bold text-gray-900">
-                            ₹{featuredBooks[currentFeaturedBook].price}
-                          </div>
-                          {featuredBooks[currentFeaturedBook].originalPrice && (
-                            <div className="text-sm text-gray-500 line-through">
-                              ₹
-                              {featuredBooks[currentFeaturedBook].originalPrice}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `/products/${featuredBooks[currentFeaturedBook]._id}`
-                              )
-                            }
-                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                          >
-                            View Details
-                          </button>
-                          <button className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                            Add to Cart
-                          </button>
-                        </div>
-                      </div>
+        {booksLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy"></div>
+          </div>
+        ) : latestBooks.length > 0 ? (
+          <div className="relative">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {getEnglishSlideBooks().map((book) => (
+                <div
+                  key={book._id}
+                  className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer flex flex-col h-full"
+                  onClick={() => navigate(`/products/${book._id}`)}
+                >
+                  <div className="relative aspect-[3/4] bg-gray-100 flex items-center justify-center p-4">
+                    <img
+                      src={getBookImageUrl(book)}
+                      alt={book.title}
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute top-2 right-2 bg-navy text-white bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-1 rounded-full text-xs font-semibold">
+                      {book.format || "Paperback"}
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Navigation */}
-              {featuredBooks.length > 1 && (
-                <>
-                  <button
-                    onClick={() =>
-                      setCurrentFeaturedBook((prev) =>
-                        prev > 0 ? prev - 1 : featuredBooks.length - 1
-                      )
-                    }
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setCurrentFeaturedBook((prev) =>
-                        prev < featuredBooks.length - 1 ? prev + 1 : 0
-                      )
-                    }
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 leading-tight">
+                      {book.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs mb-2 line-clamp-1">
+                      {book.author}
+                    </p>
 
-                  {/* Indicators */}
-                  <div className="flex justify-center mt-6 space-x-2">
-                    {featuredBooks.map((_, index) => (
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-lg font-bold text-gray-900">
+                        ₹{book.price}
+                      </span>
+                      {book.originalPrice &&
+                        book.originalPrice > book.price && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ₹{book.originalPrice}
+                          </span>
+                        )}
+                    </div>
+
+                    <div className="mt-auto space-y-2">
                       <button
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          currentFeaturedBook === index
-                            ? "bg-blue-600 w-6"
-                            : "bg-gray-300 hover:bg-gray-400"
-                        }`}
-                        onClick={() => setCurrentFeaturedBook(index)}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Trending Books */}
-      {trendingBooks.length > 0 && (
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="flex items-center space-x-2 mb-2">
-                <TrendingUp className="text-orange-600" size={20} />
-                <span className="text-sm font-medium text-orange-600 uppercase tracking-wider">
-                  Trending Now
-                </span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Most Popular This Week
-              </h2>
-            </div>
-            <button
-              onClick={() => navigate("/trending")}
-              className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center"
-            >
-              View All <ChevronRight size={16} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {trendingBooks.slice(0, 4).map((book, index) => (
-              <div
-                key={book._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="relative">
-                      <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                        <img
-                          src={getBookImageUrl(book)}
-                          alt={book.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="absolute -top-2 -left-2 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                        #{index + 1}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-2">
-                        {book.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs mb-3">
-                        {book.author}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-gray-900">
-                          ₹{book.price}
-                        </span>
-                        <button
-                          onClick={() => navigate(`/products/${book._id}`)}
-                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
-                          View →
-                        </button>
-                      </div>
+                        className="w-full border border-gray-300 text-gray-700 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/products/${book._id}`);
+                        }}
+                      >
+                        <Eye size={14} />
+                        View Details
+                      </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+              ))}
+            </div>
 
-      {/* Quick Categories Grid */}
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Explore by Genre
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {categories.slice(1, 7).map((cat) => (
-            <button
+            <div className="flex justify-center mt-8 space-x-2">
+              {[0, 1, 2].map((index) => (
+                <button
+                  key={index}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    currentSlide === index ? "bg-navy" : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No latest books available
+          </div>
+        )}
+      </section>
+
+      {/* Featured Categories - Responsive */}
+      <section className="px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-navy text-center sm:text-left">
+            Featured Categories
+          </h2>
+          <button
+            className="text-navy font-medium hover:underline text-sm sm:text-base"
+            onClick={() => navigate("/categories")}
+          >
+            All Categories →
+          </button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          {categories.map((cat) => (
+            <div
               key={cat.name}
-              onClick={() => {
-                setActiveCategory(cat.name);
-                scrollToBooks();
-              }}
-              className={`${cat.color} rounded-xl p-4 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
+              className={`${cat.color} rounded-2xl p-4 sm:p-6 text-center cursor-pointer hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center min-h-32`}
+              onClick={() => navigate(cat.route)}
             >
-              <div className="text-2xl mb-2">{cat.icon}</div>
-              <div className="font-medium text-sm">{cat.name}</div>
-              <div className="text-xs text-gray-600 mt-1">
-                {booksByCategory[cat.name]?.pagination?.totalBooks || "100+"}{" "}
-                books
-              </div>
-            </button>
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain mb-2"
+              />
+              <p className="text-sm font-medium text-gray-800">{cat.name}</p>
+              <p className="text-gray-500 text-xs mt-1">
+                {booksByCategory[cat.name]?.pagination.totalBooks || 0} books
+              </p>
+            </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Featured Authors */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 py-8">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Featured Authors
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredAuthors.map((author, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">👤</span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">{author.name}</h3>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <span className="text-sm text-gray-600">
-                        {author.books} books
-                      </span>
-                      <span className="flex items-center text-sm">
-                        <Star
-                          className="text-yellow-500 fill-current mr-1"
-                          size={14}
-                        />
-                        {author.rating}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button className="w-full mt-4 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                  View Books
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Quote Section - UPDATED with background image */}
+      <section
+        className="relative text-white px-4 sm:px-6 lg:px-8 py-8 md:py-12 my-8 md:my-12 rounded-2xl mx-4 sm:mx-6 lg:mx-8 overflow-hidden"
+        style={{
+          backgroundImage: `url('${quoteBackground}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl"></div>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Start Reading?
-          </h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join our community of readers and discover amazing books every day.
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold italic text-center mb-4 leading-relaxed">
+            "I do believe something very magical can happen when you read a
+            book."
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate("/categories")}
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg"
-            >
-              Browse All Books
-            </button>
-            <button
-              onClick={() => navigate("/signup")}
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
-            >
-              Join for Free
-            </button>
+          <p className="text-center text-gray-200 text-sm sm:text-base">
+            — J.K. Rowling
+          </p>
+        </div>
+      </section>
+
+      {/* Promo Boxes - UPDATED with background images */}
+      <section className="px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          {/* New Publications */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.newPublications}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-teal-600 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">
+                New Publications
+              </h3>
+              <p className="text-sm mb-4">Discover the latest releases</p>
+              <button
+                onClick={() => navigate("/categories")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Show more →
+              </button>
+            </div>
+          </div>
+
+          {/* Sale on History books */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.historySale}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-blue-900 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">
+                Sale on History books
+              </h3>
+              <p className="text-sm mb-4">Enjoy special discounts</p>
+              <button
+                onClick={() => navigate("/collections/history")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Shop now →
+              </button>
+            </div>
+          </div>
+
+          {/* Top Rated */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-8 text-white overflow-hidden min-h-48 flex flex-col justify-between"
+            style={{
+              backgroundImage: `url('${promoBackgrounds.topRated}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="absolute inset-0 bg-red-400 bg-opacity-40"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg sm:text-xl font-bold mb-2">Top Rated</h3>
+              <p className="text-sm mb-4">Best sellers this week</p>
+              <button
+                onClick={() => navigate("/categories")}
+                className="text-white underline text-sm font-medium hover:no-underline"
+              >
+                Browse →
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

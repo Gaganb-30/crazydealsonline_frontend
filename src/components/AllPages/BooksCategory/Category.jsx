@@ -75,27 +75,27 @@ const Category = () => {
   };
 
   // Better category descriptions
-  const getCategoryDescription = (category) => {
-    const descriptions = {
-      Science: "Explore scientific discoveries and the wonders of our universe",
-      History: "Journey through time and uncover the stories that shaped us",
-      Fiction: "Lose yourself in imaginative worlds and compelling narratives",
-      Kids: "Spark young imaginations with fun and educational stories",
-      Biography: "Discover inspiring lives and remarkable personal journeys",
-      Technology: "Stay ahead with insights into innovation and digital trends",
-      Business: "Master strategies for success in the corporate world",
-      Health: "Embrace wellness with guides to healthy living and medicine",
-      Travel: "Wander through captivating destinations and cultures",
-      Cooking:
-        "Create culinary masterpieces with expert recipes and techniques",
-      Art: "Immerse yourself in creative expression and visual masterpieces",
-      Sports: "Dive into athletic excellence and competitive spirit",
-      Religion: "Explore spiritual wisdom and religious traditions",
-      Philosophy: "Ponder life's big questions and profound ideas",
-      Education: "Expand your knowledge with learning resources and materials",
-    };
-    return descriptions[category] || `Discover our ${category} collection`;
-  };
+  // const getCategoryDescription = (category) => {
+  //   const descriptions = {
+  //     Science: "Explore scientific discoveries and the wonders of our universe",
+  //     History: "Journey through time and uncover the stories that shaped us",
+  //     Fiction: "Lose yourself in imaginative worlds and compelling narratives",
+  //     Kids: "Spark young imaginations with fun and educational stories",
+  //     Biography: "Discover inspiring lives and remarkable personal journeys",
+  //     Technology: "Stay ahead with insights into innovation and digital trends",
+  //     Business: "Master strategies for success in the corporate world",
+  //     Health: "Embrace wellness with guides to healthy living and medicine",
+  //     Travel: "Wander through captivating destinations and cultures",
+  //     Cooking:
+  //       "Create culinary masterpieces with expert recipes and techniques",
+  //     Art: "Immerse yourself in creative expression and visual masterpieces",
+  //     Sports: "Dive into athletic excellence and competitive spirit",
+  //     Religion: "Explore spiritual wisdom and religious traditions",
+  //     Philosophy: "Ponder life's big questions and profound ideas",
+  //     Education: "Expand your knowledge with learning resources and materials",
+  //   };
+  //   return descriptions[category] || `Discover our ${category} collection`;
+  // };
 
   const handleSearchClick = () => {
     // Navigate to home with state that will trigger search bar opening
@@ -199,7 +199,7 @@ const Category = () => {
 
       {/* Categories Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {categories.map((category, index) => (
             <div
               key={category}
@@ -210,28 +210,27 @@ const Category = () => {
                 className={`bg-gradient-to-br ${getCategoryGradient(
                   category,
                   index
-                )} rounded-2xl p-6 text-white shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105`}
+                )} rounded-2xl p-5 text-white shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105`}
               >
                 {/* Icon */}
-                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-3">
                   <span className="text-xl">
                     {categoryIcons[category] || "📖"}
                   </span>
                 </div>
 
-                {/* Content */}
-                <h3 className="font-semibold text-lg mb-2 capitalize">
-                  {category}
-                </h3>
-                <p className="text-white text-opacity-90 text-sm leading-relaxed mb-4">
-                  {getCategoryDescription(category)}
-                </p>
-
                 {/* CTA */}
                 <div className="flex items-center justify-between">
-                  <span className="text-white text-opacity-80 text-sm font-medium">
+                  {/* <span className="text-white text-opacity-80 text-sm font-medium">
                     Browse books
-                  </span>
+                  </span>  */}
+                  {/* Content */}
+                  <h3 className="font-semibold text-lg capitalize">
+                    {category}
+                  </h3>
+                  {/* <p className="text-white text-opacity-90 text-sm leading-relaxed mb-4">
+                  {getCategoryDescription(category)}
+                </p> */}
                   <svg
                     className="w-4 h-4 text-white text-opacity-80 transform group-hover:translate-x-1 transition-transform"
                     fill="none"
