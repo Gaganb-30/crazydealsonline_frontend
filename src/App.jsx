@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-import HomePage from "./components/AllPages/Home/HomePage";
+import HomePage from "./components/AllPages/Home/HomePageAlt";
+import HomePage2 from "./components/AllPages/Home/HomePage";
 import SingleBookPage from "./components/AllPages/SingleBook/SingleBookPage";
 import Cart from "./components/AllPages/CartPages/Cart";
 import Login from "./components/Admin/Login";
@@ -28,6 +29,7 @@ import TermsAndConditions from "./components/OtherPages/TermsAndConditions";
 import Profile from "./components/AllPages/Profile/Profile";
 import AdminDashboard from "./components/Admin/Dashboard/AdminDashboard";
 import BulkImport from "./components/Admin/BooksManagement/BulkImport";
+import BulkBookEditor from "./components/Admin/BooksManagement/BulkBookEditor";
 
 // Layout component that includes the Header and Footer
 const Layout = ({ children }) => {
@@ -142,6 +144,14 @@ function App() {
             element={
               <Layout>
                 <BulkImport />
+              </Layout>
+            }
+          />
+          <Route
+            path="/admin/books/bulk-edit"
+            element={
+              <Layout>
+                <BulkBookEditor />
               </Layout>
             }
           />
