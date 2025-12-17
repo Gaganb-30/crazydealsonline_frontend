@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-import HomePage from "./components/AllPages/Home/HomePageAlt";
-import HomePage2 from "./components/AllPages/Home/HomePage";
+import HomePage from "./components/AllPages/Home/HomePage";
 import SingleBookPage from "./components/AllPages/SingleBook/SingleBookPage";
 import Cart from "./components/AllPages/CartPages/Cart";
 import Login from "./components/Admin/Login";

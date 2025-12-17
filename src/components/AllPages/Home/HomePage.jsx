@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Heart,
-  Search,
-  ShoppingBag,
   ChevronLeft,
   ChevronRight,
-  Star,
-  Clock,
   Eye,
   X,
   CheckCircle,
@@ -99,14 +94,15 @@ const HomePage = () => {
     {
       name: "Biography",
       route: "/collections/biography",
-      image: "https://i.postimg.cc/HLvRsJ6m/Fiction.png",
+      image:
+        "https://thumbs.dreamstime.com/b/book-story-feather-logo-isolated-white-background-simple-vector-413649870.jpg",
       color: "bg-purple-200",
     },
     {
       name: "Military & Defence",
       route: "/collections/science",
       image:
-        "https://i.postimg.cc/85F3F109/groovy-back-to-school-clipart-science-book-illustration-in-trendy-retro-y2k-style-png.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/ADGPI_Indian_Army.svg/1280px-ADGPI_Indian_Army.svg.png",
       color: "bg-blue-200",
     },
     {
@@ -118,14 +114,14 @@ const HomePage = () => {
     {
       name: "Self-Help",
       route: "/collections/self-help",
-      image:
-        "https://i.postimg.cc/PxLcLtR0/pngtree-ancient-vintage-mystery-book-with-ornate-details-png-image-14657244.png",
+      image: "https://www.gipshospital.com/img/detail-85.jpg",
       color: "bg-pink-200",
     },
     {
       name: "Religious",
       route: "/collections/religious",
-      image: "https://i.postimg.cc/9M4S4Wk0/romance.png",
+      image:
+        "https://cdn3d.iconscout.com/3d/premium/thumb/diwali-book-3d-icon-png-download-10890251.png",
       color: "bg-pink-100",
     },
   ];
@@ -429,10 +425,7 @@ const HomePage = () => {
           {book.originalPrice && book.originalPrice > book.price && (
             <div className="absolute -top-1 -left-1 overflow-hidden w-16 h-16 z-20">
               <div className="absolute bg-gradient-to-br from-orange-500 to-red-600 text-white text-[10px] font-black uppercase w-24 text-center py-1 -rotate-45 -left-6 top-3 shadow-lg">
-                {Math.round(
-                  ((book.originalPrice - book.price) / book.originalPrice) * 100
-                )}
-                % OFF
+                {discountPercentage}% OFF
               </div>
             </div>
           )}

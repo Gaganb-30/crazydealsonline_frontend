@@ -13,7 +13,50 @@ import {
   User,
   Hash,
   X,
+  Eye,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
+
+// Toast Component
+const Toast = ({ message, type = "success", onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
+      <div
+        className={`
+        flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border
+        ${
+          type === "success"
+            ? "bg-green-50 text-green-800 border-green-200"
+            : "bg-red-50 text-red-800 border-red-200"
+        }
+        min-w-[300px] max-w-md backdrop-blur-sm
+      `}
+      >
+        {type === "success" ? (
+          <CheckCircle size={20} className="text-green-600 flex-shrink-0" />
+        ) : (
+          <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
+        )}
+        <span className="font-medium">{message}</span>
+        <button
+          onClick={onClose}
+          className="ml-auto text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          <X size={18} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const SearchResults = () => {
   const location = useLocation();
@@ -30,7 +73,7 @@ const SearchResults = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 99999999]);
   const [formatFilter, setFormatFilter] = useState("all");
-  const [availabilityFilter, setAvailabilityFilter] = useState("all");
+  const [toast, setToast] = useState(null);
 
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("q") || "";
@@ -133,15 +176,6 @@ const SearchResults = () => {
       result = result.filter((book) => book.format === formatFilter);
     }
 
-    // Apply availability filter
-    // if (availabilityFilter !== "all") {
-    //   if (availabilityFilter === "in-stock") {
-    //     result = result.filter((book) => book.stock > 0);
-    //   } else if (availabilityFilter === "out-of-stock") {
-    //     result = result.filter((book) => book.stock <= 0);
-    //   }
-    // }
-
     // Apply sorting
     result.sort((a, b) => {
       switch (sortBy) {
@@ -175,15 +209,12 @@ const SearchResults = () => {
     setFilteredBooks(result);
     setTotalPages(Math.ceil(result.length / itemsPerPage));
     setCurrentPage(1);
-  }, [
-    books,
-    searchType,
-    searchQuery,
-    priceRange,
-    formatFilter,
-    availabilityFilter,
-    sortBy,
-  ]);
+  }, [books, searchType, searchQuery, priceRange, formatFilter, sortBy]);
+
+  // Show toast message
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+  };
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
@@ -224,7 +255,6 @@ const SearchResults = () => {
         : 5000;
     setPriceRange([0, Math.min(99999999, maxPrice)]);
     setFormatFilter("all");
-    setAvailabilityFilter("all");
     setSortBy("relevance");
   };
 
@@ -237,7 +267,6 @@ const SearchResults = () => {
     if (priceRange[0] > 0 || priceRange[1] < Math.min(99999999, maxPrice))
       count++;
     if (formatFilter !== "all") count++;
-    if (availabilityFilter !== "all") count++;
     if (sortBy !== "relevance") count++;
     return count;
   };
@@ -268,72 +297,172 @@ const SearchResults = () => {
     }
   };
 
-  // const renderStars = (rating) => {
-  //   return (
-  //     <div className="flex items-center">
-  //       {[1, 2, 3, 4, 5].map((star) => (
-  //         <Star
-  //           key={star}
-  //           className={`h-3 w-3 ${
-  //             star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
-  //           }`}
-  //         />
-  //       ))}
-  //       <span className="ml-1 text-sm text-gray-600">({rating})</span>
-  //     </div>
-  //   );
-  // };
+  // Get book image URL
+  const getBookImageUrl = (book) => {
+    return (
+      book.images?.find((img) => img.isPrimary)?.url ||
+      book.images?.[0]?.url ||
+      "/book-placeholder.jpg"
+    );
+  };
 
-  const renderBookCard = (book) => (
-    <div
-      key={book._id || book.id}
-      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-    >
-      <Link to={`/products/${book._id || book.id}`} className="block">
-        <div className="aspect-[3/4] bg-gray-200 rounded-t-lg overflow-hidden">
+  // Handle add to cart with authentication check
+  const handleAddToCart = async (book, e) => {
+    e.stopPropagation();
+
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showToast("Please login to add items to cart", "error");
+      setTimeout(() => {
+        navigate("/login", { state: { from: window.location.pathname } });
+      }, 1500);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/cart/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            bookId: book._id,
+            quantity: 1,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        showToast(`"${book.title}" added to cart successfully!`, "success");
+      } else {
+        showToast(data.message || "Failed to add to cart", "error");
+      }
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      showToast("Failed to add to cart. Please try again.", "error");
+    }
+  };
+
+  const renderBookCard = (book) => {
+    const discountPercentage =
+      book.originalPrice && book.originalPrice > book.price
+        ? Math.round(
+            ((book.originalPrice - book.price) / book.originalPrice) * 100
+          )
+        : null;
+
+    return (
+      <div
+        key={book._id}
+        className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 cursor-pointer flex flex-col h-full"
+        onClick={() => navigate(`/products/${book._id}`)}
+      >
+        <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <img
-            src={book.images?.[0]?.url || "/book-placeholder.png"}
+            src={getBookImageUrl(book)}
             alt={book.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1 hover:text-blue-600 transition-colors">
-            {book.title}
-          </h3>
-          <p className="text-sm text-gray-600 mb-2">by {book.author}</p>
 
-          {searchType === "isbn" && book.details?.isbn && (
-            <p className="text-xs text-gray-500 mb-2">
-              ISBN: {book.details.isbn}
-            </p>
+          {/* Shadow overlay effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          {/* Triangle Discount Tag - Top Left Corner */}
+          {book.originalPrice && book.originalPrice > book.price && (
+            <div className="absolute -top-1 -left-1 overflow-hidden w-16 h-16 z-20">
+              <div className="absolute bg-gradient-to-br from-orange-500 to-red-600 text-white text-[10px] font-black uppercase w-24 text-center py-1 -rotate-45 -left-6 top-3 shadow-lg">
+                {discountPercentage}% OFF
+              </div>
+            </div>
           )}
 
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-lg font-bold text-blue-600">
-                ₹{book.price}
-              </span>
-              {book.originalPrice && book.originalPrice > book.price && (
-                <span className="ml-2 text-sm text-gray-500 line-through">
-                  ₹{book.originalPrice}
-                </span>
-              )}
-            </div>
-            <span className="text-xs text-gray-500 capitalize bg-gray-100 px-2 py-1 rounded">
-              {book.format}
-            </span>
+          {/* Format Badge - Top Right */}
+          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md border border-gray-200 z-10">
+            {book.format || "Paperback"}
           </div>
 
-          {book.stock <= 0 && (
-            <div className="mt-2 text-xs text-red-600 font-medium">
-              Out of Stock
-            </div>
-          )}
+          {/* Quick View Overlay */}
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              className="bg-white text-gray-900 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/products/${book._id}`);
+              }}
+            >
+              <Eye size={16} />
+              Quick Preview
+            </button>
+          </div>
         </div>
-      </Link>
-    </div>
-  );
+
+        <div className="p-4 flex-1 flex flex-col">
+          <div className="mb-3">
+            <h3 className="font-bold text-gray-900 text-base mb-1.5 line-clamp-2 leading-tight group-hover:text-blue-700 transition-colors">
+              {book.title}
+            </h3>
+            <p className="text-gray-600 text-sm line-clamp-1">
+              By {book.author}
+            </p>
+          </div>
+
+          <div className="mt-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="text-2xl font-bold text-gray-900">
+                    ₹{book.price}
+                  </span>
+                  {book.originalPrice && book.originalPrice > book.price && (
+                    <span className="text-sm text-gray-500 line-through ml-2">
+                      ₹{book.originalPrice}
+                    </span>
+                  )}
+                </div>
+                {book.originalPrice && book.originalPrice > book.price && (
+                  <div className="mt-1 text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded inline-block">
+                    Save ₹{book.originalPrice - book.price}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${
+                book.stock > 0
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+              }`}
+              onClick={(e) => handleAddToCart(book, e)}
+              disabled={book.stock === 0}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              {book.stock > 0 ? "Add to Cart" : "Out of Stock"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderBookListItem = (book) => (
     <div
@@ -371,11 +500,6 @@ const SearchResults = () => {
               <span className="text-sm text-gray-500 mr-3">
                 {book.category}
               </span>
-              {/* {book.ratings && (
-                <div className="flex items-center">
-                  {renderStars(book.ratings.average || 0)}
-                </div>
-              )} */}
             </div>
 
             <p className="text-gray-700 text-sm line-clamp-2 mb-3">
@@ -592,32 +716,6 @@ const SearchResults = () => {
             ))}
           </div>
         </div>
-
-        {/* Availability Filter */}
-        {/* <div className="mb-6">
-          <h4 className="font-medium text-gray-900 mb-3">Availability</h4>
-          <div className="space-y-2">
-            {["all", "in-stock", "out-of-stock"].map((availability) => (
-              <label key={availability} className="flex items-center">
-                <input
-                  type="radio"
-                  name="availability"
-                  value={availability}
-                  checked={availabilityFilter === availability}
-                  onChange={(e) => setAvailabilityFilter(e.target.value)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <span className="ml-2 text-sm text-gray-700 capitalize">
-                  {availability === "all"
-                    ? "All Books"
-                    : availability === "in-stock"
-                    ? "In Stock"
-                    : "Out of Stock"}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div> */}
       </div>
     );
   };
@@ -657,6 +755,15 @@ const SearchResults = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -876,6 +983,80 @@ const SearchResults = () => {
           </div>
         </div>
       </div>
+
+      {/* Add CSS for animations */}
+      <style jsx>{`
+        .slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 8px;
+          background: #e5e7eb;
+          border-radius: 4px;
+          outline: none;
+        }
+
+        .slider-thumb::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          transition: all 0.2s ease;
+        }
+
+        .slider-thumb::-webkit-slider-thumb:hover {
+          background: #1d4ed8;
+          transform: scale(1.1);
+        }
+
+        .slider-thumb::-webkit-slider-thumb:active {
+          background: #1e40af;
+          transform: scale(1.15);
+        }
+
+        .slider-thumb::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          transition: all 0.2s ease;
+        }
+
+        .slider-thumb::-moz-range-thumb:hover {
+          background: #1d4ed8;
+          transform: scale(1.1);
+        }
+
+        .slider-thumb::-moz-range-track {
+          width: 100%;
+          height: 8px;
+          background: #e5e7eb;
+          border-radius: 4px;
+          border: none;
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+
+        .animate-fade-in-down {
+          animation: fadeInDown 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

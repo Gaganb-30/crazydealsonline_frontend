@@ -1269,41 +1269,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 md:p-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Start Your Reading Journey Today
-            </h2>
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of readers who have found their next favorite book
-              with us
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                className="group bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                onClick={() => navigate("/register")}
-              >
-                <span>Create Free Account</span>
-                <ArrowRight
-                  size={20}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </button>
-              <button
-                className="group bg-white text-gray-800 px-8 py-4 rounded-xl font-semibold border-2 border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-                onClick={() => navigate("/collections")}
-              >
-                <BookOpen size={20} />
-                <span>Browse Without Account</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Add CSS for animations */}
       <style jsx>{`
         @keyframes blob {

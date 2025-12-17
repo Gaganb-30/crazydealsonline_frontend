@@ -16,6 +16,7 @@ import {
   EyeOff,
   Plus,
   Upload,
+  FileCog,
   LayoutDashboard,
   Menu,
 } from "lucide-react";
@@ -323,6 +324,9 @@ const Profile = () => {
   const handleBulkAdd = () => {
     navigate("/admin/books/bulk-upload");
   };
+  const handleBulkEdit = () => {
+    navigate("/admin/books/bulk-edit");
+  };
 
   const handleSingleAdd = () => {
     navigate("/admin/books/publish");
@@ -393,6 +397,13 @@ const Profile = () => {
                     <span className="hidden sm:inline">Bulk Upload</span>
                   </button>
                   <button
+                    onClick={handleBulkEdit}
+                    className="flex items-center bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm"
+                  >
+                    <FileCog className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Bulk Edit</span>
+                  </button>
+                  <button
                     onClick={handleSingleAdd}
                     className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                   >
@@ -429,6 +440,13 @@ const Profile = () => {
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Bulk Upload
+                </button>
+                <button
+                  onClick={handleBulkEdit}
+                  className="flex items-center bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors whitespace-nowrap flex-shrink-0 text-sm"
+                >
+                  <FileCog className="h-4 w-4 mr-2" />
+                  Bulk Edit
                 </button>
                 <button
                   onClick={handleSingleAdd}
