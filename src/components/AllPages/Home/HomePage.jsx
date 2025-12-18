@@ -157,7 +157,7 @@ const HomePage = () => {
       const response = await fetch(
         `${
           import.meta.env.VITE_API_URL
-        }/api/books/hindi/books?page=2&limit=18&sort=createdAt&order=desc`
+        }/api/books/hindi/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
 
@@ -181,7 +181,7 @@ const HomePage = () => {
       const response = await fetch(
         `${
           import.meta.env.VITE_API_URL
-        }/api/books/english/books?page=3&limit=18&sort=createdAt&order=desc`
+        }/api/books/english/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
 
