@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,6 +9,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { createBookSlug, defaultSEO } from "../../../utils/seo";
 
 // Toast Component
 const Toast = ({ message, type = "success", onClose }) => {
@@ -24,11 +26,10 @@ const Toast = ({ message, type = "success", onClose }) => {
       <div
         className={`
         flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border
-        ${
-          type === "success"
+        ${type === "success"
             ? "bg-green-50 text-green-800 border-green-200"
             : "bg-red-50 text-red-800 border-red-200"
-        }
+          }
         min-w-[300px] max-w-md backdrop-blur-sm
       `}
       >
@@ -131,8 +132,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -155,8 +155,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books/hindi/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -179,8 +178,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books/english/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -240,8 +238,7 @@ const HomePage = () => {
         for (const category of categories) {
           try {
             const response = await fetch(
-              `${import.meta.env.VITE_API_URL}/api/books/category/${
-                category.name
+              `${import.meta.env.VITE_API_URL}/api/books/category/${category.name
               }?page=1&limit=8`
             );
             const data = await response.json();
@@ -401,15 +398,15 @@ const HomePage = () => {
     const discountPercentage =
       book.originalPrice && book.originalPrice > book.price
         ? Math.round(
-            ((book.originalPrice - book.price) / book.originalPrice) * 100
-          )
+          ((book.originalPrice - book.price) / book.originalPrice) * 100
+        )
         : null;
 
     return (
       <div
         key={book._id}
         className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 cursor-pointer flex flex-col h-full"
-        onClick={() => navigate(`/products/${book._id}`)}
+        onClick={() => navigate(`/products/${createBookSlug(book.title, book._id)}`)}
       >
         <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <img
@@ -441,7 +438,7 @@ const HomePage = () => {
               className="bg-white text-gray-900 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/products/${book._id}`);
+                navigate(`/products/${createBookSlug(book.title, book._id)}`);
               }}
             >
               <Eye size={16} />
@@ -483,11 +480,10 @@ const HomePage = () => {
 
             {/* Add to Cart Button */}
             <button
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${
-                book.stock > 0
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${book.stock > 0
+                ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+                : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
               onClick={(e) => handleAddToCart(book, e)}
               disabled={book.stock === 0}
             >
@@ -543,6 +539,28 @@ const HomePage = () => {
 
   return (
     <div className="w-full bg-gradient-to-b from-gray-50 to-white overflow-x-hidden">
+      {/* SEO Meta Tags */}
+      <Helmet>
+        <title>{defaultSEO.defaultTitle}</title>
+        <meta name="description" content={defaultSEO.defaultDescription} />
+        <meta name="keywords" content="buy books online, best book deals, Hindi books, English books, biography, self help, fiction, exam preparation, free delivery books India" />
+        <link rel="canonical" href={defaultSEO.siteUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={defaultSEO.defaultTitle} />
+        <meta property="og:description" content={defaultSEO.defaultDescription} />
+        <meta property="og:image" content={defaultSEO.defaultImage} />
+        <meta property="og:url" content={defaultSEO.siteUrl} />
+        <meta property="og:site_name" content={defaultSEO.siteName} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={defaultSEO.defaultTitle} />
+        <meta name="twitter:description" content={defaultSEO.defaultDescription} />
+        <meta name="twitter:image" content={defaultSEO.defaultImage} />
+      </Helmet>
+
       {/* Toast Notification */}
       {toast && (
         <Toast
@@ -637,7 +655,7 @@ const HomePage = () => {
                   {/* View Details Button - Now clickable */}
                   <button
                     className="flex items-center bg-navy text-gray-800 underline py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors duration-300 text-sm sm:text-base"
-                    onClick={() => navigate(`/products/${currentFeatured._id}`)}
+                    onClick={() => navigate(`/products/${createBookSlug(currentFeatured.title, currentFeatured._id)}`)}
                   >
                     <Eye className="mr-2" size={15}></Eye>
                     View Details
@@ -675,11 +693,10 @@ const HomePage = () => {
               {featuredBooks.map((_, index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    currentFeaturedBook === index
-                      ? "bg-gray-600 w-4"
-                      : "bg-gray-400"
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${currentFeaturedBook === index
+                    ? "bg-gray-600 w-4"
+                    : "bg-gray-400"
+                    }`}
                   onClick={() => setCurrentFeaturedBook(index)}
                 />
               ))}
@@ -724,11 +741,10 @@ const HomePage = () => {
               {[0, 1, 2].map((index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    currentSlide.latest === index
-                      ? "bg-gray-600 w-4"
-                      : "bg-gray-400"
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide.latest === index
+                    ? "bg-gray-600 w-4"
+                    : "bg-gray-400"
+                    }`}
                   onClick={() =>
                     setCurrentSlide((prev) => ({ ...prev, latest: index }))
                   }
@@ -779,11 +795,10 @@ const HomePage = () => {
               {[0, 1, 2].map((index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    currentSlide.hindi === index
-                      ? "bg-gray-600 w-4"
-                      : "bg-gray-400"
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide.hindi === index
+                    ? "bg-gray-600 w-4"
+                    : "bg-gray-400"
+                    }`}
                   onClick={() =>
                     setCurrentSlide((prev) => ({ ...prev, hindi: index }))
                   }
@@ -834,11 +849,10 @@ const HomePage = () => {
               {[0, 1, 2].map((index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    currentSlide.english === index
-                      ? "bg-gray-600 w-4"
-                      : "bg-gray-400"
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide.english === index
+                    ? "bg-gray-600 w-4"
+                    : "bg-gray-400"
+                    }`}
                   onClick={() =>
                     setCurrentSlide((prev) => ({ ...prev, english: index }))
                   }

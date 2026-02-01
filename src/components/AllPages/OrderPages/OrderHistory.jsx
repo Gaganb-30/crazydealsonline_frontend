@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { createBookSlug } from "../../../utils/seo";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -359,9 +360,8 @@ const OrderHistory = () => {
                           Order #{order.orderNumber}
                         </h3>
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            statusColors[order.status]
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[order.status]
+                            }`}
                         >
                           {statusIcons[order.status]} {order.status}
                         </span>
@@ -472,7 +472,7 @@ const OrderHistory = () => {
                       {order.status === "DELIVERED" && (
                         <button
                           onClick={() =>
-                            navigate(`/products/${order.items[0]?.book?._id}`)
+                            navigate(`/products/${createBookSlug(order.items[0]?.book?.title, order.items[0]?.book?._id)}`)
                           }
                           className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
                         >
@@ -514,11 +514,10 @@ const OrderHistory = () => {
                       {showEllipsis && <span className="px-2">...</span>}
                       <button
                         onClick={() => handlePageChange(page)}
-                        className={`w-10 h-10 rounded-lg font-semibold ${
-                          page === pagination.currentPage
+                        className={`w-10 h-10 rounded-lg font-semibold ${page === pagination.currentPage
                             ? "bg-blue-600 text-white"
                             : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                        } transition-colors`}
+                          } transition-colors`}
                       >
                         {page}
                       </button>

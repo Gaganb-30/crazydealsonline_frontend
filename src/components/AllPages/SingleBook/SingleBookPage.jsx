@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { extractIdFromSlug, defaultSEO } from "../../../utils/seo";
 
 const SingleBookPage = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
+  const id = extractIdFromSlug(slug); // Extract actual ID from SEO-friendly slug
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,7 @@ const SingleBookPage = () => {
     const fetchBook = async () => {
       try {
         setLoading(true);
+        setBook(null); // Reset book data to prevent stale meta tags
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/books/${id}`
         );
@@ -186,6 +190,65 @@ const SingleBookPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+      {/* SEO Meta Tags */}
+      <Helmet key={id}>
+        <title>{`${book.title} by ${book.author} | ${defaultSEO.siteName}`}</title>
+        <meta name="description" content={book.about ? book.about.substring(0, 160) : `Buy ${book.title} by ${book.author} at ₹${book.price}. Available in ${book.format || 'Paperback'} format at CrazyDealsOnline with free delivery.`} />
+        <meta name="keywords" content={`${book.title}, ${book.author}, ${book.category}, buy books online, ${book.tags?.join(', ') || ''}`} />
+        <link rel="canonical" href={`${defaultSEO.siteUrl}/products/${slug}`} />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={`${book.title} by ${book.author}`} />
+        <meta property="og:description" content={book.about || `Get ${book.title} at the best price.`} />
+        <meta property="og:image" content={book.images?.[0]?.url || defaultSEO.defaultImage} />
+        <meta property="og:url" content={`${defaultSEO.siteUrl}/products/${slug}`} />
+        <meta property="og:site_name" content={defaultSEO.siteName} />
+        <meta property="product:price:amount" content={book.price} />
+        <meta property="product:price:currency" content="INR" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${book.title} by ${book.author}`} />
+        <meta name="twitter:description" content={book.about?.substring(0, 120) || `Buy ${book.title} at CrazyDealsOnline`} />
+        <meta name="twitter:image" content={book.images?.[0]?.url || defaultSEO.defaultImage} />
+
+        {/* JSON-LD Structured Data for Product */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": book.title,
+            "author": {
+              "@type": "Person",
+              "name": book.author
+            },
+            "description": book.about,
+            "image": book.images?.map(img => img.url) || [],
+            "offers": {
+              "@type": "Offer",
+              "price": book.price,
+              "priceCurrency": "INR",
+              "availability": book.available && book.stock > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+              "seller": {
+                "@type": "Organization",
+                "name": "CrazyDealsOnline"
+              }
+            },
+            "isbn": book.details?.isbn,
+            "numberOfPages": book.details?.pages,
+            "publisher": {
+              "@type": "Organization",
+              "name": book.publisher
+            },
+            "inLanguage": book.language,
+            "bookFormat": book.format === "Hardcover" ? "Hardcover" : "Paperback"
+          })}
+        </script>
+      </Helmet>
+
       <div className="max-w-7xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
@@ -238,11 +301,10 @@ const SingleBookPage = () => {
         {/* Cart Message */}
         {cartMessage && (
           <div
-            className={`mb-6 p-4 rounded-xl text-center font-semibold transition-all duration-300 ${
-              cartMessage.includes("✅")
-                ? "bg-green-100 text-green-800 border border-green-200"
-                : "bg-red-100 text-red-800 border border-red-200"
-            }`}
+            className={`mb-6 p-4 rounded-xl text-center font-semibold transition-all duration-300 ${cartMessage.includes("✅")
+              ? "bg-green-100 text-green-800 border border-green-200"
+              : "bg-red-100 text-red-800 border border-red-200"
+              }`}
           >
             {cartMessage}
           </div>
@@ -275,11 +337,10 @@ const SingleBookPage = () => {
                     <button
                       key={image._id}
                       onClick={() => setSelectedImage(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 bg-gray-50 flex items-center justify-center p-2 ${
-                        selectedImage === index
-                          ? "border-blue-500"
-                          : "border-gray-200"
-                      }`}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 bg-gray-50 flex items-center justify-center p-2 ${selectedImage === index
+                        ? "border-blue-500"
+                        : "border-gray-200"
+                        }`}
                     >
                       <img
                         src={image.url}
@@ -337,11 +398,10 @@ const SingleBookPage = () => {
 
               {/* Stock Status */}
               <div
-                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
-                  book.available && book.stock > 0
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
+                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${book.available && book.stock > 0
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+                  }`}
               >
                 {book.available && book.stock > 0
                   ? `✓ In Stock (${book.stock} available)`

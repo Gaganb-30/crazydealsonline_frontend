@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { createBookSlug } from "../../utils/seo";
 
 const Header = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -82,9 +83,8 @@ const Header = () => {
     setSearchError("");
 
     try {
-      let url = `${
-        import.meta.env.VITE_API_URL
-      }/api/books/search?q=${encodeURIComponent(query)}&limit=5`;
+      let url = `${import.meta.env.VITE_API_URL
+        }/api/books/search?q=${encodeURIComponent(query)}&limit=5`;
 
       // Add search type parameter if not 'all'
       if (searchType !== "all") {
@@ -218,32 +218,28 @@ const Header = () => {
           {/* Search Bar - Expands when active - POSITION FIXED */}
           <div
             ref={searchRef}
-            className={`flex items-center space-x-2 sm:space-x-4 ${
-              isSearchActive ? "flex-1 ml-4 lg:justify-center" : "justify-end"
-            }`}
+            className={`flex items-center space-x-2 sm:space-x-4 ${isSearchActive ? "flex-1 ml-4 lg:justify-center" : "justify-end"
+              }`}
           >
             {/* Search Container */}
             <div
-              className={`relative ${
-                isSearchActive ? "flex-1 max-w-2xl" : "w-auto"
-              }`}
+              className={`relative ${isSearchActive ? "flex-1 max-w-2xl" : "w-auto"
+                }`}
             >
               <form onSubmit={handleSearchSubmit} className="relative">
                 <div
-                  className={`relative transition-all duration-300 ${
-                    isSearchActive ? "w-full" : "w-10"
-                  }`}
+                  className={`relative transition-all duration-300 ${isSearchActive ? "w-full" : "w-10"
+                    }`}
                 >
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Search books, authors, ISBN..."
-                    className={`w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
-                      isSearchActive ? "opacity-100" : "opacity-0 w-0"
-                    }`}
+                    className={`w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${isSearchActive ? "opacity-100" : "opacity-0 w-0"
+                      }`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    // Removed onFocus that was automatically showing options
+                  // Removed onFocus that was automatically showing options
                   />
 
                   {/* Search Options Toggle Button - Only show when search is active */}
@@ -272,11 +268,10 @@ const Header = () => {
                   <button
                     type="button"
                     onClick={handleSearchToggle}
-                    className={`absolute inset-y-0 right-0 flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 ${
-                      isSearchActive
+                    className={`absolute inset-y-0 right-0 flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 ${isSearchActive
                         ? "text-gray-500 hover:text-gray-700"
                         : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {isSearchActive ? (
                       <X className="h-5 w-5" />
@@ -300,11 +295,10 @@ const Header = () => {
                       <button
                         key={type}
                         onClick={() => handleSearchOptionSelect(type)}
-                        className={`w-full text-left px-3 py-2 rounded-md text-sm mb-1 last:mb-0 ${
-                          searchType === type
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm mb-1 last:mb-0 ${searchType === type
                             ? "bg-blue-50 text-blue-700 border border-blue-200"
                             : "hover:bg-gray-50"
-                        }`}
+                          }`}
                       >
                         <div className="font-medium">
                           By {getSearchTypeLabel(type)}
@@ -358,7 +352,7 @@ const Header = () => {
                       {searchResults.map((book) => (
                         <a
                           key={book._id || book.id}
-                          href={`/products/${book._id || book.id}`}
+                          href={`/products/${createBookSlug(book.title, book._id || book.id)}`}
                           className="flex items-center px-4 py-3 hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0"
                           onClick={() => {
                             setIsSearchActive(false);

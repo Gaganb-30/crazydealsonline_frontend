@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { createBookSlug, defaultSEO } from "../../../utils/seo";
 
 const Cart = () => {
   const [cart, setCart] = useState(null);
@@ -378,6 +380,13 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+      {/* SEO Meta Tags */}
+      <Helmet>
+        <title>{`Shopping Cart${totalItems > 0 ? ` (${totalItems} items)` : ''} | ${defaultSEO.siteName}`}</title>
+        <meta name="description" content="Review your shopping cart and proceed to checkout. Free delivery on orders over ₹1500 at CrazyDealsOnline." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -491,7 +500,7 @@ const Cart = () => {
                       {/* Book Image */}
                       <div
                         className="flex-shrink-0 w-24 h-32 bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
-                        onClick={() => navigate(`/products/${item.book?._id}`)}
+                        onClick={() => navigate(`/products/${createBookSlug(item.book?.title, item.book?._id)}`)}
                       >
                         <img
                           src={
@@ -518,7 +527,7 @@ const Cart = () => {
                             <h3
                               className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-blue-600 transition-colors"
                               onClick={() =>
-                                navigate(`/products/${item.book?._id}`)
+                                navigate(`/products/${createBookSlug(item.book?.title, item.book?._id)}`)
                               }
                             >
                               {item.book?.title || "Unknown Book"}

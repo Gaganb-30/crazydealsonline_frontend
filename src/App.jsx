@@ -95,7 +95,7 @@ function App() {
 
           {/* Book Detailed Page */}
           <Route
-            path="/products/:id"
+            path="/products/:slug"
             element={
               <Layout>
                 <SingleBookPage />

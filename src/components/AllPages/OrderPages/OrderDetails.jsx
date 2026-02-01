@@ -1,6 +1,7 @@
 // pages/OrderDetails.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { createBookSlug } from "../../../utils/seo";
 
 const OrderDetails = () => {
   const [order, setOrder] = useState(null);
@@ -183,9 +184,8 @@ const OrderDetails = () => {
                   Order Status
                 </h2>
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    statusColors[order.status]
-                  }`}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[order.status]
+                    }`}
                 >
                   {statusIcons[order.status]} {order.status}
                 </span>
@@ -265,7 +265,7 @@ const OrderDetails = () => {
                       {order.status === "DELIVERED" && (
                         <button
                           onClick={() =>
-                            navigate(`/products/${item.book?._id}`)
+                            navigate(`/products/${createBookSlug(item.book?.title, item.book?._id)}`)
                           }
                           className="mt-2 text-blue-600 hover:text-blue-700 text-sm font-semibold"
                         >

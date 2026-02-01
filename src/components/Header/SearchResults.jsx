@@ -17,6 +17,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { createBookSlug } from "../../utils/seo";
 
 // Toast Component
 const Toast = ({ message, type = "success", onClose }) => {
@@ -33,11 +34,10 @@ const Toast = ({ message, type = "success", onClose }) => {
       <div
         className={`
         flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border
-        ${
-          type === "success"
+        ${type === "success"
             ? "bg-green-50 text-green-800 border-green-200"
             : "bg-red-50 text-red-800 border-red-200"
-        }
+          }
         min-w-[300px] max-w-md backdrop-blur-sm
       `}
       >
@@ -100,8 +100,7 @@ const SearchResults = () => {
 
       try {
         const response = await fetch(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/books/search?q=${encodeURIComponent(searchQuery)}&limit=1000`
         );
 
@@ -353,15 +352,15 @@ const SearchResults = () => {
     const discountPercentage =
       book.originalPrice && book.originalPrice > book.price
         ? Math.round(
-            ((book.originalPrice - book.price) / book.originalPrice) * 100
-          )
+          ((book.originalPrice - book.price) / book.originalPrice) * 100
+        )
         : null;
 
     return (
       <div
         key={book._id}
         className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 cursor-pointer flex flex-col h-full"
-        onClick={() => navigate(`/products/${book._id}`)}
+        onClick={() => navigate(`/products/${createBookSlug(book.title, book._id)}`)}
       >
         <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <img
@@ -393,7 +392,7 @@ const SearchResults = () => {
               className="bg-white text-gray-900 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/products/${book._id}`);
+                navigate(`/products/${createBookSlug(book.title, book._id)}`);
               }}
             >
               <Eye size={16} />
@@ -435,11 +434,10 @@ const SearchResults = () => {
 
             {/* Add to Cart Button */}
             <button
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${
-                book.stock > 0
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${book.stock > 0
+                ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+                : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
               onClick={(e) => handleAddToCart(book, e)}
               disabled={book.stock === 0}
             >
@@ -469,7 +467,7 @@ const SearchResults = () => {
       key={book._id || book.id}
       className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
     >
-      <Link to={`/products/${book._id || book.id}`} className="block">
+      <Link to={`/products/${createBookSlug(book.title, book._id || book.id)}`} className="block">
         <div className="flex p-4">
           <div className="w-24 h-32 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
             <img
@@ -546,11 +544,10 @@ const SearchResults = () => {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-2 rounded-md text-sm font-medium ${
-            currentPage === i
-              ? "bg-blue-600 text-white"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
+          className={`px-3 py-2 rounded-md text-sm font-medium ${currentPage === i
+            ? "bg-blue-600 text-white"
+            : "text-gray-700 hover:bg-gray-100"
+            }`}
         >
           {i}
         </button>
@@ -798,21 +795,19 @@ const SearchResults = () => {
               <div className="flex border border-gray-300 rounded-md overflow-hidden">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 ${
-                    viewMode === "grid"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600"
-                  }`}
+                  className={`p-2 ${viewMode === "grid"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-600"
+                    }`}
                 >
                   <Grid className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 ${
-                    viewMode === "list"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-600"
-                  }`}
+                  className={`p-2 ${viewMode === "list"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-600"
+                    }`}
                 >
                   <List className="h-4 w-4" />
                 </button>
@@ -851,19 +846,17 @@ const SearchResults = () => {
                 <button
                   key={option.type}
                   onClick={() => handleSearchTypeChange(option.type)}
-                  className={`flex items-start p-3 rounded-lg border-2 transition-all duration-200 ${
-                    searchType === option.type
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
+                  className={`flex items-start p-3 rounded-lg border-2 transition-all duration-200 ${searchType === option.type
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
                 >
                   <div className="flex items-center">
                     <div
-                      className={`p-2 rounded-full mr-3 ${
-                        searchType === option.type
-                          ? "bg-blue-100"
-                          : "bg-gray-100"
-                      }`}
+                      className={`p-2 rounded-full mr-3 ${searchType === option.type
+                        ? "bg-blue-100"
+                        : "bg-gray-100"
+                        }`}
                     >
                       {getSearchTypeIcon(option.type)}
                     </div>
