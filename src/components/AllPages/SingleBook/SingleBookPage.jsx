@@ -105,6 +105,17 @@ const SingleBookPage = () => {
 
       const data = await response.json();
 
+      // Handle expired/invalid token — clear session and redirect to login
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setCartMessage("❌ Session expired. Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+        return;
+      }
+
       if (data.success) {
         setCartMessage("✅ Added to cart successfully!");
 

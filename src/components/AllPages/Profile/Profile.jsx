@@ -304,6 +304,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -488,11 +489,10 @@ const Profile = () => {
                       setMobileMenuOpen(false);
                       if (tab.id === "orders") fetchOrders();
                     }}
-                    className={`flex items-center justify-center p-3 rounded-lg font-medium text-sm ${
-                      activeTab === tab.id
+                    className={`flex items-center justify-center p-3 rounded-lg font-medium text-sm ${activeTab === tab.id
                         ? "bg-blue-50 text-blue-600 border border-blue-200"
                         : "text-gray-600 hover:bg-gray-50 border border-gray-200"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-4 w-4 mr-2" />
                     {tab.name}
@@ -523,11 +523,10 @@ const Profile = () => {
                       setActiveTab(tab.id);
                       if (tab.id === "orders") fetchOrders();
                     }}
-                    className={`flex items-center py-4 px-6 border-b-2 font-medium text-sm ${
-                      activeTab === tab.id
+                    className={`flex items-center py-4 px-6 border-b-2 font-medium text-sm ${activeTab === tab.id
                         ? "border-blue-500 text-blue-600"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5 mr-2" />
                     {tab.name}
@@ -552,11 +551,10 @@ const Profile = () => {
         {/* Message Alert */}
         {message.text && (
           <div
-            className={`mb-6 p-4 rounded-lg ${
-              message.type === "success"
+            className={`mb-6 p-4 rounded-lg ${message.type === "success"
                 ? "bg-green-50 text-green-800 border border-green-200"
                 : "bg-red-50 text-red-800 border border-red-200"
-            }`}
+              }`}
           >
             {message.text}
           </div>
@@ -1083,13 +1081,12 @@ const Profile = () => {
                         </p>
                       </div>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          order.status === "delivered"
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === "delivered"
                             ? "bg-green-100 text-green-800"
                             : order.status === "cancelled"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
+                              ? "bg-red-100 text-red-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
                       >
                         {order.status?.charAt(0).toUpperCase() +
                           order.status?.slice(1)}

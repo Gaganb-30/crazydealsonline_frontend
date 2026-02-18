@@ -35,11 +35,10 @@ const Toast = ({ message, type = "success", onClose }) => {
       <div
         className={`
         flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border
-        ${
-          type === "success"
+        ${type === "success"
             ? "bg-green-50 text-green-800 border-green-200"
             : "bg-red-50 text-red-800 border-red-200"
-        }
+          }
         min-w-[300px] max-w-md backdrop-blur-sm
       `}
       >
@@ -170,8 +169,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books?page=1&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -194,8 +192,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books?page=2&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -218,8 +215,7 @@ const HomePage = () => {
     try {
       setBooksLoading(true);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/api/books?page=3&limit=18&sort=createdAt&order=desc`
       );
       const data = await response.json();
@@ -279,8 +275,7 @@ const HomePage = () => {
         for (const category of categories) {
           try {
             const response = await fetch(
-              `${import.meta.env.VITE_API_URL}/api/books/category/${
-                category.name
+              `${import.meta.env.VITE_API_URL}/api/books/category/${category.name
               }?page=1&limit=8`
             );
             const data = await response.json();
@@ -414,6 +409,17 @@ const HomePage = () => {
 
       const data = await response.json();
 
+      // Handle expired/invalid token — clear session and redirect to login
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        showToast("Session expired. Please login again.", "error");
+        setTimeout(() => {
+          navigate("/login", { state: { from: "/home" } });
+        }, 1500);
+        return;
+      }
+
       if (data.success) {
         showToast(`"${book.title}" added to cart successfully!`, "success");
       } else {
@@ -430,8 +436,8 @@ const HomePage = () => {
     const discountPercentage =
       book.originalPrice && book.originalPrice > book.price
         ? Math.round(
-            ((book.originalPrice - book.price) / book.originalPrice) * 100
-          )
+          ((book.originalPrice - book.price) / book.originalPrice) * 100
+        )
         : null;
 
     return (
@@ -497,11 +503,10 @@ const HomePage = () => {
                   <Star
                     key={i}
                     size={12}
-                    className={`${
-                      i < Math.floor(book.rating)
+                    className={`${i < Math.floor(book.rating)
                         ? "text-amber-400 fill-amber-400"
                         : "text-gray-300"
-                    }`}
+                      }`}
                   />
                 ))}
                 <span className="text-xs text-gray-600 ml-2">
@@ -726,7 +731,7 @@ const HomePage = () => {
                         </span>
                         {currentFeatured.originalPrice &&
                           currentFeatured.originalPrice >
-                            currentFeatured.price && (
+                          currentFeatured.price && (
                             <span className="text-lg text-gray-500 line-through">
                               ₹{currentFeatured.originalPrice.toFixed(2)}
                             </span>
@@ -783,11 +788,10 @@ const HomePage = () => {
                   {featuredBooks.map((_, index) => (
                     <button
                       key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        currentFeaturedBook === index
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${currentFeaturedBook === index
                           ? "w-6 bg-gradient-to-r from-blue-600 to-indigo-700"
                           : "bg-gray-300"
-                      }`}
+                        }`}
                       onClick={() => setCurrentFeaturedBook(index)}
                     />
                   ))}
@@ -847,11 +851,10 @@ const HomePage = () => {
                     {[0, 1, 2].map((index) => (
                       <button
                         key={index}
-                        className={`w-8 h-2 rounded-full transition-all ${
-                          currentSlideIndices.latest === index
+                        className={`w-8 h-2 rounded-full transition-all ${currentSlideIndices.latest === index
                             ? "bg-gradient-to-r from-blue-600 to-indigo-700"
                             : "bg-gray-300"
-                        }`}
+                          }`}
                         onClick={() =>
                           setCurrentSlideIndices((prev) => ({
                             ...prev,
@@ -936,11 +939,10 @@ const HomePage = () => {
                     {[0, 1, 2].map((index) => (
                       <button
                         key={index}
-                        className={`w-8 h-2 rounded-full transition-all ${
-                          currentSlideIndices.hindi === index
+                        className={`w-8 h-2 rounded-full transition-all ${currentSlideIndices.hindi === index
                             ? "bg-gradient-to-r from-blue-600 to-indigo-700"
                             : "bg-gray-300"
-                        }`}
+                          }`}
                         onClick={() =>
                           setCurrentSlideIndices((prev) => ({
                             ...prev,
@@ -1017,11 +1019,10 @@ const HomePage = () => {
                     {[0, 1, 2].map((index) => (
                       <button
                         key={index}
-                        className={`w-8 h-2 rounded-full transition-all ${
-                          currentSlideIndices.english === index
+                        className={`w-8 h-2 rounded-full transition-all ${currentSlideIndices.english === index
                             ? "bg-gradient-to-r from-blue-600 to-indigo-700"
                             : "bg-gray-300"
-                        }`}
+                          }`}
                         onClick={() =>
                           setCurrentSlideIndices((prev) => ({
                             ...prev,

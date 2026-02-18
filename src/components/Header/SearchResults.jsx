@@ -337,6 +337,17 @@ const SearchResults = () => {
 
       const data = await response.json();
 
+      // Handle expired/invalid token — clear session and redirect to login
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        showToast("Session expired. Please login again.", "error");
+        setTimeout(() => {
+          navigate("/login", { state: { from: window.location.pathname } });
+        }, 1500);
+        return;
+      }
+
       if (data.success) {
         showToast(`"${book.title}" added to cart successfully!`, "success");
       } else {
