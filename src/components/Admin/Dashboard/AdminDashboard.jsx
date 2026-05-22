@@ -1016,6 +1016,11 @@ const AdminDashboard = () => {
                         <p className="text-sm text-gray-600">
                           Format: {item.format}
                         </p>
+                        {item.book?.details?.isbn && (
+                          <p className="text-sm text-gray-500">
+                            ISBN: {item.book.details.isbn}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-medium text-gray-900">
