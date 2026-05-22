@@ -447,15 +447,26 @@ const OrderHistory = () => {
                         View Details
                       </Link>
 
-                      {order.deliveryTracking?.trackingLink && (
-                        <a
-                          href={order.deliveryTracking.trackingLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                        >
-                          Track Order
-                        </a>
+                      {(order.deliveryTracking?.shipmentId || order.deliveryTracking?.trackingLink) && (
+                        <>
+                          {order.deliveryTracking.shipmentId ? (
+                            <span
+                              className="border border-indigo-300 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-semibold text-sm inline-flex items-center"
+                              title="Use this Shipment ID to track your order on the carrier's website"
+                            >
+                              🚚 {order.deliveryTracking.shipmentId}
+                            </span>
+                          ) : (
+                            <a
+                              href={order.deliveryTracking.trackingLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                            >
+                              Track Order
+                            </a>
+                          )}
+                        </>
                       )}
                     </div>
 

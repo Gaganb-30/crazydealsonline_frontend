@@ -53,7 +53,7 @@ const AdminDashboard = () => {
   // Status update form
   const [statusForm, setStatusForm] = useState({
     status: "",
-    trackingLink: "",
+    shipmentId: "",
     notes: "",
   });
 
@@ -201,7 +201,7 @@ const AdminDashboard = () => {
             )
           );
           setShowStatusModal(false);
-          setStatusForm({ status: "", trackingLink: "", notes: "" });
+          setStatusForm({ status: "", shipmentId: "", notes: "" });
         }
       }
     } catch (error) {
@@ -215,7 +215,7 @@ const AdminDashboard = () => {
     setSelectedOrder(order);
     setStatusForm({
       status: order.status,
-      trackingLink: order.deliveryTracking?.trackingLink || "",
+      shipmentId: order.deliveryTracking?.shipmentId || "",
       notes: "",
     });
     setShowStatusModal(true);
@@ -803,16 +803,23 @@ const AdminDashboard = () => {
                             >
                               {order.status}
                             </span>
-                            {order.deliveryTracking?.trackingLink && (
+                            {(order.deliveryTracking?.shipmentId || order.deliveryTracking?.trackingLink) && (
                               <div className="mt-1">
-                                <a
-                                  href={order.deliveryTracking.trackingLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:text-blue-800"
-                                >
-                                  Track
-                                </a>
+                                {order.deliveryTracking.shipmentId ? (
+                                  <span className="text-xs text-gray-600 flex items-center">
+                                    <Truck className="h-3 w-3 mr-1 text-indigo-500" />
+                                    {order.deliveryTracking.shipmentId}
+                                  </span>
+                                ) : (
+                                  <a
+                                    href={order.deliveryTracking.trackingLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 hover:text-blue-800"
+                                  >
+                                    Track
+                                  </a>
+                                )}
                               </div>
                             )}
                           </td>
@@ -1100,19 +1107,34 @@ const AdminDashboard = () => {
               </div>
 
               {/* Tracking */}
-              {selectedOrder.deliveryTracking?.trackingLink && (
+              {(selectedOrder.deliveryTracking?.shipmentId || selectedOrder.deliveryTracking?.trackingLink) && (
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3">
                     Delivery Tracking
                   </h4>
-                  <a
-                    href={selectedOrder.deliveryTracking.trackingLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    {selectedOrder.deliveryTracking.trackingLink}
-                  </a>
+                  {selectedOrder.deliveryTracking.shipmentId && (
+                    <div className="flex items-center bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3 mb-2">
+                      <Truck className="h-5 w-5 text-indigo-600 mr-3 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-semibold text-indigo-800">
+                          Shipment ID
+                        </p>
+                        <p className="text-sm text-indigo-700">
+                          {selectedOrder.deliveryTracking.shipmentId}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {selectedOrder.deliveryTracking.trackingLink && (
+                    <a
+                      href={selectedOrder.deliveryTracking.trackingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      {selectedOrder.deliveryTracking.trackingLink}
+                    </a>
+                  )}
                   {selectedOrder.deliveryTracking.shippedAt && (
                     <p className="text-sm text-gray-600 mt-1">
                       Shipped on:{" "}
@@ -1183,20 +1205,23 @@ const AdminDashboard = () => {
               {statusForm.status === "SHIPPED" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tracking Link
+                    Shipment ID
                   </label>
                   <input
-                    type="url"
-                    value={statusForm.trackingLink}
+                    type="text"
+                    value={statusForm.shipmentId}
                     onChange={(e) =>
                       setStatusForm((prev) => ({
                         ...prev,
-                        trackingLink: e.target.value,
+                        shipmentId: e.target.value,
                       }))
                     }
-                    placeholder="https://tracking.example.com/..."
+                    placeholder="e.g. DTDC Shipment Number : D1244567"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter the carrier name and tracking number so the customer can track their shipment.
+                  </p>
                 </div>
               )}
 

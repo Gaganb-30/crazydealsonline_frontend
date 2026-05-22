@@ -207,16 +207,31 @@ const OrderDetails = () => {
                 )}
               </div>
 
-              {order.deliveryTracking?.trackingLink && (
+              {(order.deliveryTracking?.shipmentId || order.deliveryTracking?.trackingLink) && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <a
-                    href={order.deliveryTracking.trackingLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
-                  >
-                    🚚 Track Your Package
-                  </a>
+                  {order.deliveryTracking.shipmentId && (
+                    <div className="flex items-center bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3 mb-2">
+                      <span className="text-xl mr-3">🚚</span>
+                      <div>
+                        <p className="text-sm font-semibold text-indigo-800">
+                          Shipment ID
+                        </p>
+                        <p className="text-sm text-indigo-700 font-medium">
+                          {order.deliveryTracking.shipmentId}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {order.deliveryTracking.trackingLink && (
+                    <a
+                      href={order.deliveryTracking.trackingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
+                    >
+                      🔗 Track Online
+                    </a>
+                  )}
                 </div>
               )}
             </div>
