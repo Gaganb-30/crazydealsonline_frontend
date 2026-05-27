@@ -204,7 +204,7 @@ const SingleBookPage = () => {
       {/* SEO Meta Tags */}
       <Helmet key={id}>
         <title>{`${book.title} by ${book.author} | ${defaultSEO.siteName}`}</title>
-        <meta name="description" content={book.about ? book.about.substring(0, 160) : `Buy ${book.title} by ${book.author} at ₹${book.price}. Available in ${book.format || 'Paperback'} format at CrazyDealsOnline with free delivery.`} />
+        <meta name="description" content={book.about ? book.about.substring(0, 160) : `Buy ${book.title} by ${book.author} at ₹${book.price}${book.originalPrice && book.originalPrice > book.price ? ` (MRP ₹${book.originalPrice} - ${Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100)}% OFF)` : ''}. Format: ${book.format || 'Paperback'}. Available at CrazyDealsOnline with free delivery.`} />
         <meta name="keywords" content={`${book.title}, ${book.author}, ${book.category}, buy books online, ${book.tags?.join(', ') || ''}`} />
         <link rel="canonical" href={`${defaultSEO.siteUrl}/products/${slug}`} />
 
@@ -397,9 +397,11 @@ const SingleBookPage = () => {
                 </span>
                 {book.originalPrice && book.originalPrice > book.price && (
                   <>
+                    {" "}
                     <span className="text-xl text-gray-500 line-through">
                       ₹{book.originalPrice}
                     </span>
+                    {" "}
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-semibold">
                       {calculateDiscount()}% OFF
                     </span>
@@ -423,7 +425,7 @@ const SingleBookPage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 py-4 border-y border-gray-200">
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    Format:
+                    Format:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.format}
@@ -431,7 +433,7 @@ const SingleBookPage = () => {
                 </div>
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    Publisher:
+                    Publisher:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.publisher}
@@ -439,7 +441,7 @@ const SingleBookPage = () => {
                 </div>
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    Language:
+                    Language:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.language}
@@ -447,7 +449,7 @@ const SingleBookPage = () => {
                 </div>
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    Pages:
+                    Pages:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.pages}
@@ -455,7 +457,7 @@ const SingleBookPage = () => {
                 </div>
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    ISBN:
+                    ISBN:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.isbn}
@@ -463,7 +465,7 @@ const SingleBookPage = () => {
                 </div>
                 <div className="flex justify-between sm:block">
                   <span className="text-gray-600 text-sm sm:text-base">
-                    Country:
+                    Country:{" "}
                   </span>
                   <span className="ml-2 font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none">
                     {book.details?.country}
